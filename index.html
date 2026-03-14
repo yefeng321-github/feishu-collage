@@ -5,74 +5,28 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>图片拼图</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap');
-
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-
 :root{
-  --bg:#0f0f13;
-  --s1:#1a1a22;
-  --s2:#22222e;
-  --bd:#2e2e3e;
-  --ac:#4f7cff;
-  --ac2:#a78bfa;
-  --tx:#e8e8f0;
-  --tx2:#8080a8;
-  --ok:#34d399;
-  --er:#f87171;
-  --r:8px;
+  --bg:#0f0f13;--s1:#1a1a22;--s2:#22222e;--bd:#2e2e3e;
+  --ac:#4f7cff;--tx:#e8e8f0;--tx2:#8080a8;
+  --ok:#34d399;--er:#f87171;--r:8px;
 }
-
-body{
-  font-family:'Noto Sans SC',system-ui,sans-serif;
-  background:var(--bg);
-  color:var(--tx);
-  font-size:13px;
-  line-height:1.6;
-  padding:14px;
-  min-height:100vh;
-}
-
-/* ─ header ─ */
-.logo{
-  font-size:15px;font-weight:700;
-  background:linear-gradient(135deg,var(--ac),var(--ac2));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  margin-bottom:2px;
-}
+body{font-family:system-ui,sans-serif;background:var(--bg);color:var(--tx);font-size:13px;line-height:1.6;padding:14px;min-height:100vh;}
+.logo{font-size:15px;font-weight:700;color:var(--ac);margin-bottom:2px;}
 .sub{font-size:11px;color:var(--tx2);margin-bottom:16px;}
-
-/* ─ card ─ */
 .card{background:var(--s1);border:1px solid var(--bd);border-radius:var(--r);padding:14px;margin-bottom:12px;}
 .ct{font-size:10px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;}
-
-/* ─ form ─ */
 label{display:block;font-size:11px;color:var(--tx2);margin-bottom:3px;margin-top:9px;}
 label:first-of-type{margin-top:0;}
-select{
-  width:100%;background:var(--s2);border:1px solid var(--bd);border-radius:6px;
-  color:var(--tx);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;
-  transition:border-color .15s;cursor:pointer;
-}
+select{width:100%;background:var(--s2);border:1px solid var(--bd);border-radius:6px;color:var(--tx);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;cursor:pointer;}
 select:focus{border-color:var(--ac);}
 select option{background:#1a1a22;}
-
-/* ─ btn ─ */
-.btn{
-  display:inline-flex;align-items:center;gap:5px;
-  padding:8px 14px;border-radius:7px;border:none;
-  font-family:inherit;font-size:12px;font-weight:500;cursor:pointer;
-  transition:all .15s;white-space:nowrap;
-}
-.bp{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;}
-.bp:hover{opacity:.87;transform:translateY(-1px);}
-.bs{background:var(--s2);color:var(--tx);border:1px solid var(--bd);}
-.bs:hover{border-color:var(--ac);color:var(--ac);}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:8px 14px;border-radius:7px;border:none;font-family:inherit;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.bp{background:var(--ac);color:#fff;}
+.bp:hover{opacity:.87;}
 .bf{width:100%;justify-content:center;}
-.btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important;}
-.brow{display:flex;gap:7px;margin-top:11px;flex-wrap:wrap;}
-
-/* ─ status ─ */
+.btn:disabled{opacity:.4;cursor:not-allowed;}
+.brow{display:flex;gap:7px;margin-top:11px;}
 .st{display:flex;align-items:flex-start;gap:6px;padding:7px 9px;border-radius:6px;font-size:11px;margin-top:8px;}
 .st.ok{background:#0d2b1e;color:var(--ok);border:1px solid #1a4a33;}
 .st.er{background:#2b0d0d;color:var(--er);border:1px solid #4a1a1a;}
@@ -83,31 +37,17 @@ select option{background:#1a1a22;}
 .st.er .dot{background:var(--er);}
 .st.if .dot{background:#93c5fd;}
 .st.wn .dot{background:#fbbf24;}
-
-/* ─ thumb grid ─ */
 .tg{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:7px;margin-top:8px;}
 .th{aspect-ratio:1;border-radius:5px;overflow:hidden;border:1px solid var(--bd);background:var(--s2);position:relative;}
 .th img{width:100%;height:100%;object-fit:cover;display:block;}
 .th .tn{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.65);color:#fff;font-size:9px;padding:2px 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-
-/* ─ spinner ─ */
-.sp{width:12px;height:12px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .5s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-.hidden{display:none!important;}
-.sep{height:1px;background:var(--bd);margin:11px 0;}
-
-/* ─ record list ─ */
-.rec-item{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:7px 9px;border-radius:6px;background:var(--s2);
-  border:1px solid var(--bd);margin-bottom:6px;cursor:pointer;
-  transition:border-color .15s;
-}
+.rec-item{display:flex;align-items:center;justify-content:space-between;padding:7px 9px;border-radius:6px;background:var(--s2);border:1px solid var(--bd);margin-bottom:6px;cursor:pointer;transition:border-color .15s;}
 .rec-item:hover,.rec-item.active{border-color:var(--ac);}
 .rec-item.active{background:rgba(79,124,255,.1);}
 .rec-name{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px;}
 .rec-badge{font-size:10px;color:var(--tx2);flex-shrink:0;}
+.hidden{display:none!important;}
+#log{font-size:10px;color:var(--tx2);background:var(--s2);border:1px solid var(--bd);border-radius:6px;padding:8px;margin-top:8px;max-height:100px;overflow-y:auto;font-family:monospace;white-space:pre-wrap;}
 </style>
 </head>
 <body>
@@ -115,307 +55,218 @@ select option{background:#1a1a22;}
 <div class="logo">🖼 图片拼图插件</div>
 <p class="sub">从附件字段读取图片 → 画布编排 → 保存结果</p>
 
-<!-- Step1: 选择表 & 字段 -->
-<div class="card" id="cfg-card">
+<div class="card">
   <div class="ct">① 配置</div>
-
   <label>数据表</label>
-  <select id="sel-table" onchange="onTableChange()">
-    <option value="">-- 加载中 --</option>
-  </select>
-
+  <select id="sel-table" onchange="onTableChange()"><option value="">-- 初始化中 --</option></select>
   <label>来源字段（附件/图片）</label>
-  <select id="sel-src">
-    <option value="">-- 请先选择数据表 --</option>
-  </select>
-
+  <select id="sel-src"><option value="">-- 请先选择数据表 --</option></select>
   <label>保存结果到字段（附件）</label>
-  <select id="sel-dst">
-    <option value="">-- 请先选择数据表 --</option>
-  </select>
-
+  <select id="sel-dst"><option value="">-- 请先选择数据表 --</option></select>
   <div id="cfg-status" class="hidden"></div>
 </div>
 
-<!-- Step2: 选记录 -->
 <div class="card hidden" id="rec-card">
   <div class="ct">② 选择记录</div>
   <div id="rec-list"></div>
-  <div id="rec-status" class="hidden"></div>
 </div>
 
-<!-- Step3: 图片预览 -->
 <div class="card hidden" id="img-card">
   <div class="ct">③ 已加载图片</div>
   <div class="tg" id="img-grid"></div>
   <div id="img-status" class="hidden"></div>
   <div class="brow">
-    <button class="btn bp bf" id="btn-open" onclick="openEditor()">🎨 打开画布编辑器</button>
+    <button class="btn bp bf" onclick="openEditor()">🎨 打开画布编辑器</button>
   </div>
 </div>
 
-<script type="module">
-import { bitable, FieldType } from 'https://cdn.jsdelivr.net/npm/@lark-base-open/js-sdk@0.3.15/+esm';
+<div id="log">初始化中...</div>
 
-// ── 全局状态 ────────────────────────────────────────────
-window._state = {
-  table: null,
-  tableId: null,
-  srcFieldId: null,
-  dstFieldId: null,
-  recordId: null,
-  images: [],        // [{name, url, token, size, type, permission}]
-};
+<script>
+// ── 日志 ──────────────────────────────────
+function log(msg) {
+  const el = document.getElementById('log');
+  el.textContent += '\n' + msg;
+  el.scrollTop = el.scrollHeight;
+}
 
-// ── 工具函数 ────────────────────────────────────────────
-function $(id){ return document.getElementById(id); }
+// ── 状态 ──────────────────────────────────
+const STATE = { table: null, tableId: null, recordId: null, images: [] };
 
-function showStatus(id, type, msg){
-  const el = $(id);
-  el.className = `st ${type}`;
-  el.innerHTML = `<div class="dot"></div><span>${msg}</span>`;
+function showSt(id, type, msg) {
+  const el = document.getElementById(id);
+  el.className = 'st ' + type;
+  el.innerHTML = '<div class="dot"></div><span>' + msg + '</span>';
   el.classList.remove('hidden');
 }
-function hideStatus(id){ $(id).classList.add('hidden'); }
 
-function setBtn(btn, loading, text){
-  if(loading){
-    btn.disabled = true;
-    btn.innerHTML = `<div class="sp"></div><span>${text}</span>`;
-  } else {
-    btn.disabled = false;
-    btn.innerHTML = text;
-  }
+// ── 等待 bitable SDK 挂载到 window ────────
+function waitBitable() {
+  return new Promise((res, rej) => {
+    let t = 0;
+    const iv = setInterval(() => {
+      if (window.bitable) { clearInterval(iv); res(window.bitable); }
+      else if ((t += 300) > 15000) { clearInterval(iv); rej(new Error('SDK未加载，请确认在飞书多维表格中打开')); }
+    }, 300);
+  });
 }
 
-// ── 初始化：加载数据表列表 ───────────────────────────────
-async function init(){
+// ── 初始化 ────────────────────────────────
+async function init() {
   try {
-    // 监听 selection 变化，自动联动
-    bitable.base.onSelectionChange(async ({ data }) => {
-      if(data.tableId && data.tableId !== window._state.tableId){
-        await loadTableFields(data.tableId);
+    const bt = await waitBitable();
+    log('✓ SDK 就绪');
+
+    const tables = await bt.base.getTableMetaList();
+    log('✓ 数据表: ' + tables.length + ' 个');
+
+    const sel = document.getElementById('sel-table');
+    sel.innerHTML = tables.map(t => '<option value="' + t.id + '">' + t.name + '</option>').join('');
+
+    bt.base.onSelectionChange(async ({ data }) => {
+      if (data.tableId && data.tableId !== STATE.tableId) await loadFields(data.tableId);
+      if (data.recordId) {
+        const item = document.querySelector('[data-rid="' + data.recordId + '"]');
+        if (item) selectRec(data.recordId, item);
       }
     });
 
-    const tableList = await bitable.base.getTableMetaList();
-    const sel = $('sel-table');
-    sel.innerHTML = tableList.map(t =>
-      `<option value="${t.id}">${t.name}</option>`
-    ).join('');
-
-    // 默认选中当前激活表
-    const selection = await bitable.base.getSelection();
-    if(selection.tableId){
-      sel.value = selection.tableId;
-    }
+    const sel0 = await bt.base.getSelection();
+    if (sel0.tableId) sel.value = sel0.tableId;
     await onTableChange();
 
-  } catch(e){
-    showStatus('cfg-status','er','初始化失败: ' + e.message);
+  } catch(e) {
+    log('✗ ' + e.message);
+    showSt('cfg-status', 'er', e.message);
   }
 }
 
-// ── 切换数据表 ──────────────────────────────────────────
-window.onTableChange = async function(){
-  const tableId = $('sel-table').value;
-  if(!tableId) return;
-  await loadTableFields(tableId);
+window.onTableChange = async function() {
+  const id = document.getElementById('sel-table').value;
+  if (id) await loadFields(id);
 };
 
-async function loadTableFields(tableId){
-  window._state.tableId = tableId;
+async function loadFields(tableId) {
+  STATE.tableId = tableId;
   try {
-    const table = await bitable.base.getTable(tableId);
-    window._state.table = table;
+    const bt = window.bitable;
+    const table = await bt.base.getTable(tableId);
+    STATE.table = table;
+    const fields = await table.getFieldMetaList();
+    const att = fields.filter(f => f.type === 17); // 17 = Attachment
+    log('附件字段: ' + att.map(f => f.name).join(', '));
 
-    // 获取所有字段，筛选附件字段
-    const fieldList = await table.getFieldMetaList();
-    const attFields = fieldList.filter(f => f.type === FieldType.Attachment);
+    const opts = att.length
+      ? att.map(f => '<option value="' + f.id + '">' + f.name + '</option>').join('')
+      : '<option value="">-- 无附件字段 --</option>';
 
-    const makeOpts = (fields, placeholder) => {
-      if(fields.length === 0) return `<option value="">-- 无附件字段 --</option>`;
-      return `<option value="">-- ${placeholder} --</option>` +
-        fields.map(f => `<option value="${f.id}">${f.name}</option>`).join('');
-    };
+    document.getElementById('sel-src').innerHTML = opts;
+    document.getElementById('sel-dst').innerHTML = opts;
+    if (att.length >= 1) document.getElementById('sel-src').value = att[0].id;
+    if (att.length >= 2) document.getElementById('sel-dst').value = att[1].id;
 
-    $('sel-src').innerHTML = makeOpts(attFields, '选择来源字段');
-    $('sel-dst').innerHTML = makeOpts(attFields, '选择目标字段');
-
-    // 自动回填
-    if(attFields.length >= 1) $('sel-src').value = attFields[0].id;
-    if(attFields.length >= 2) $('sel-dst').value = attFields[1].id;
-
-    hideStatus('cfg-status');
-
-    // 加载记录列表
-    await loadRecords(table);
-
-  } catch(e){
-    showStatus('cfg-status','er','加载字段失败: ' + e.message);
+    await loadRecs(table);
+  } catch(e) {
+    log('✗ loadFields: ' + e.message);
   }
 }
 
-// ── 加载记录列表 ─────────────────────────────────────────
-async function loadRecords(table){
+async function loadRecs(table) {
+  document.getElementById('rec-card').classList.remove('hidden');
+  const list = document.getElementById('rec-list');
+  list.innerHTML = '<div class="st if"><div class="dot"></div><span>加载中…</span></div>';
   try {
-    $('rec-card').classList.remove('hidden');
-    $('rec-list').innerHTML = '<div class="st if"><div class="dot"></div><span>加载记录中…</span></div>';
-
-    const recordIds = await table.getRecordIdList();
-    // 最多显示 50 条
-    const showIds = recordIds.slice(0, 50);
-
-    // 获取每条记录的第一个文本字段作为显示名
-    // 用 record index 代替（避免额外 API 调用）
-    const list = $('rec-list');
+    const ids = await table.getRecordIdList();
+    const show = ids.slice(0, 50);
     list.innerHTML = '';
-    showIds.forEach((rid, i) => {
-      const div = document.createElement('div');
-      div.className = 'rec-item';
-      div.dataset.rid = rid;
-      div.innerHTML = `
-        <span class="rec-name">记录 ${i + 1}</span>
-        <span class="rec-badge" id="badge-${rid}">-</span>
-      `;
-      div.onclick = () => selectRecord(rid, div);
-      list.appendChild(div);
+    show.forEach((rid, i) => {
+      const d = document.createElement('div');
+      d.className = 'rec-item'; d.dataset.rid = rid;
+      d.innerHTML = '<span class="rec-name">记录 ' + (i+1) + '</span><span class="rec-badge" id="b-' + rid + '">…</span>';
+      d.onclick = () => selectRec(rid, d);
+      list.appendChild(d);
     });
+    if (ids.length > 50) list.insertAdjacentHTML('beforeend', '<div class="st wn" style="margin-top:6px"><div class="dot"></div><span>仅显示前50条</span></div>');
 
-    if(recordIds.length > 50){
-      list.insertAdjacentHTML('beforeend',
-        `<div class="st wn" style="margin-top:6px"><div class="dot"></div><span>仅显示前50条</span></div>`);
+    // 异步加载图片数量徽章
+    const srcId = document.getElementById('sel-src').value;
+    if (srcId) {
+      const field = await table.getField(srcId);
+      for (const rid of show) {
+        try {
+          const v = await field.getValue(rid);
+          const b = document.getElementById('b-' + rid);
+          if (b) b.textContent = v ? v.length + '张' : '0张';
+        } catch(_) {}
+      }
     }
 
-    // 异步加载每条记录的附件数量（用于徽章显示）
-    loadRecordBadges(table, showIds);
-
-    hideStatus('rec-status');
-
-    // 如果当前有选中 record，自动选上
-    const sel = await bitable.base.getSelection();
-    if(sel.recordId && showIds.includes(sel.recordId)){
-      const item = list.querySelector(`[data-rid="${sel.recordId}"]`);
-      if(item) selectRecord(sel.recordId, item);
+    // 自动选中当前记录
+    const sel = await window.bitable.base.getSelection();
+    if (sel.recordId && show.includes(sel.recordId)) {
+      const item = list.querySelector('[data-rid="' + sel.recordId + '"]');
+      if (item) selectRec(sel.recordId, item);
     }
-
-  } catch(e){
-    showStatus('rec-status','er','加载记录失败: ' + e.message);
+  } catch(e) {
+    log('✗ loadRecs: ' + e.message);
   }
 }
 
-async function loadRecordBadges(table, recordIds){
-  const srcFieldId = $('sel-src').value;
-  if(!srcFieldId) return;
-  try {
-    const field = await table.getField(srcFieldId);
-    for(const rid of recordIds){
-      try {
-        const val = await field.getValue(rid);
-        const badge = document.getElementById('badge-' + rid);
-        if(badge) badge.textContent = val ? `${val.length}张` : '0张';
-      } catch(_){}
-    }
-  } catch(_){}
-}
-
-async function selectRecord(rid, el){
+async function selectRec(rid, el) {
   document.querySelectorAll('.rec-item').forEach(i => i.classList.remove('active'));
   el.classList.add('active');
-  window._state.recordId = rid;
-  await loadImages(rid);
+  STATE.recordId = rid;
+  await loadImgs(rid);
 }
 
-// ── 加载图片 ─────────────────────────────────────────────
-async function loadImages(recordId){
-  const srcFieldId = $('sel-src').value;
-  if(!srcFieldId){
-    showStatus('img-status','wn','请先选择来源字段');
-    return;
-  }
-
-  $('img-card').classList.remove('hidden');
-  $('img-grid').innerHTML = '';
-  showStatus('img-status','if','加载图片 URL 中…');
-
+async function loadImgs(recordId) {
+  const srcId = document.getElementById('sel-src').value;
+  if (!srcId) { showSt('img-status', 'wn', '请先选择来源字段'); return; }
+  document.getElementById('img-card').classList.remove('hidden');
+  document.getElementById('img-grid').innerHTML = '';
+  showSt('img-status', 'if', '加载图片中…');
   try {
-    const table = window._state.table;
-
-    // 获取附件元数据（名称、token 等）
-    const field = await table.getField(srcFieldId);
-    const attachments = await field.getValue(recordId); // IOpenAttachment[]
-
-    if(!attachments || attachments.length === 0){
-      showStatus('img-status','wn','该记录的来源字段中没有附件');
-      $('img-card').classList.remove('hidden');
-      return;
-    }
-
-    // 获取临时 URL（有效期 10 分钟）
+    const field = await STATE.table.getField(srcId);
+    const atts = await field.getValue(recordId);
+    if (!atts || !atts.length) { showSt('img-status', 'wn', '该记录没有附件'); return; }
     const urls = await field.getAttachmentUrls(recordId);
+    STATE.images = atts.map((a, i) => ({
+      name: a.name, url: urls[i] || '', token: a.token,
+      size: a.size, type: a.type, permission: a.permission || null
+    })).filter(x => x.url && x.type && x.type.startsWith('image/'));
 
-    // 组合 images 数组
-    window._state.images = attachments.map((att, i) => ({
-      name: att.name,
-      url: urls[i] || '',
-      token: att.token,
-      size: att.size,
-      type: att.type,
-      permission: att.permission || null,
-    })).filter(img => img.url && img.type && img.type.startsWith('image/'));
+    if (!STATE.images.length) { showSt('img-status', 'wn', '没有图片类型的附件'); return; }
 
-    if(window._state.images.length === 0){
-      showStatus('img-status','wn','没有找到图片类型的附件（仅支持图片）');
-      return;
-    }
-
-    // 渲染缩略图
-    const grid = $('img-grid');
-    window._state.images.forEach(img => {
-      const div = document.createElement('div');
-      div.className = 'th';
-      div.innerHTML = `<img src="${img.url}" loading="lazy"><div class="tn">${img.name}</div>`;
-      grid.appendChild(div);
+    const grid = document.getElementById('img-grid');
+    STATE.images.forEach(img => {
+      const d = document.createElement('div');
+      d.className = 'th';
+      d.innerHTML = '<img src="' + img.url + '" loading="lazy"><div class="tn">' + img.name + '</div>';
+      grid.appendChild(d);
     });
-
-    showStatus('img-status','ok',`✓ 已加载 ${window._state.images.length} 张图片`);
-
-  } catch(e){
-    showStatus('img-status','er','加载失败: ' + e.message);
+    showSt('img-status', 'ok', '✓ 已加载 ' + STATE.images.length + ' 张图片');
+    log('✓ 图片加载完成: ' + STATE.images.length + ' 张');
+  } catch(e) {
+    log('✗ loadImgs: ' + e.message);
+    showSt('img-status', 'er', '加载失败: ' + e.message);
   }
 }
 
-// ── 打开编辑器 ────────────────────────────────────────────
-window.openEditor = function(){
-  const { images, recordId, srcFieldId, dstFieldId, tableId } = window._state;
-  const dstId = $('sel-dst').value;
-  const srcId = $('sel-src').value;
-
-  if(!images || images.length === 0){
-    alert('请先选择有图片的记录');
-    return;
-  }
-  if(!dstId){
-    alert('请先选择保存结果的目标字段');
-    return;
-  }
-
-  // 存入 sessionStorage 传给编辑器
-  sessionStorage.setItem('collage_images', JSON.stringify(images));
+window.openEditor = function() {
+  const dstId = document.getElementById('sel-dst').value;
+  if (!STATE.images.length) { alert('请先选择有图片的记录'); return; }
+  if (!dstId) { alert('请先选择保存结果的目标字段'); return; }
+  sessionStorage.setItem('collage_images', JSON.stringify(STATE.images));
   sessionStorage.setItem('collage_config', JSON.stringify({
-    tableId: window._state.tableId,
-    recordId,
-    srcFieldId: srcId,
-    dstFieldId: dstId,
+    tableId: STATE.tableId, recordId: STATE.recordId, dstFieldId: dstId
   }));
-
-  // 打开编辑器
-  window.open('./editor.html', 'collage-editor',
-    'width=1200,height=800,resizable=yes,scrollbars=no');
+  window.open('./editor.html', '_blank', 'width=1280,height=800,resizable=yes');
 };
 
-// ── 启动 ─────────────────────────────────────────────────
 init();
 </script>
+
+<!-- 飞书官方 SDK，挂载为 window.bitable -->
+<script src="https://lf-package-cn.feishucdn.com/obj/feishu-static/lark/base/open/sdk/main.js"></script>
 </body>
 </html>
