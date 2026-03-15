@@ -106,7 +106,10 @@ function waitBitable() {
     let t = 0;
     const iv = setInterval(() => {
       if (window.bitable) { clearInterval(iv); res(window.bitable); }
-      else if ((t += 300) > 15000) { clearInterval(iv); rej(new Error('SDK未加载，请确认在飞书多维表格中打开')); }
+      else if ((t += 300) > 20000) {
+        clearInterval(iv);
+        rej(new Error('请在飞书多维表格里通过「自定义插件」打开，不能直接在浏览器访问'));
+      }
     }, 300);
   });
 }
@@ -266,7 +269,6 @@ window.openEditor = function() {
 init();
 </script>
 
-<!-- 飞书官方 SDK，挂载为 window.bitable -->
-<script src="https://lf-package-cn.feishucdn.com/obj/feishu-static/lark/base/open/sdk/main.js"></script>
+<!-- 注意：window.bitable 由飞书多维表格宿主环境自动注入，无需引入外部脚本 -->
 </body>
 </html>
