@@ -4,6 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>图片拼图</title>
+
+<!-- 正确方式：用 importmap 声明 SDK 来源，再用 type=module 导入 -->
+<script type="importmap">
+{
+  "imports": {
+    "@lark-base-open/js-sdk": "https://esm.sh/@lark-base-open/js-sdk@0.3.15"
+  }
+}
+</script>
+
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -82,16 +92,20 @@ select option{background:#1a1a22;}
 
 <div id="log">初始化中...</div>
 
-<script>
-// ── 日志 ──────────────────────────────────
+<script type="module">
+import { bitable, FieldType } from '@lark-base-open/js-sdk';
+
+// ── 状态 ──────────────────────────────────
+const STATE = { table: null, tableId: null, recordId: null, images: [] };
+// 暴露给非module脚本使用
+window._bitable = bitable;
+window._STATE = STATE;
+
 function log(msg) {
   const el = document.getElementById('log');
   el.textContent += '\n' + msg;
   el.scrollTop = el.scrollHeight;
 }
-
-// ── 状态 ──────────────────────────────────
-const STATE = { table: null, tableId: null, recordId: null, images: [] };
 
 function showSt(id, type, msg) {
   const el = document.getElementById(id);
@@ -100,64 +114,48 @@ function showSt(id, type, msg) {
   el.classList.remove('hidden');
 }
 
-// ── 等待 bitable SDK 挂载到 window ────────
-function waitBitable() {
-  return new Promise((res, rej) => {
-    let t = 0;
-    const iv = setInterval(() => {
-      if (window.bitable) { clearInterval(iv); res(window.bitable); }
-      else if ((t += 300) > 20000) {
-        clearInterval(iv);
-        rej(new Error('请在飞书多维表格里通过「自定义插件」打开，不能直接在浏览器访问'));
-      }
-    }, 300);
-  });
-}
-
 // ── 初始化 ────────────────────────────────
 async function init() {
   try {
-    const bt = await waitBitable();
-    log('✓ SDK 就绪');
-
-    const tables = await bt.base.getTableMetaList();
-    log('✓ 数据表: ' + tables.length + ' 个');
+    log('正在连接飞书 SDK...');
+    const tables = await bitable.base.getTableMetaList();
+    log('✓ 连接成功，数据表数量: ' + tables.length);
 
     const sel = document.getElementById('sel-table');
-    sel.innerHTML = tables.map(t => '<option value="' + t.id + '">' + t.name + '</option>').join('');
+    sel.innerHTML = tables.map(t =>
+      '<option value="' + t.id + '">' + t.name + '</option>'
+    ).join('');
 
-    bt.base.onSelectionChange(async ({ data }) => {
-      if (data.tableId && data.tableId !== STATE.tableId) await loadFields(data.tableId);
+    bitable.base.onSelectionChange(async ({ data }) => {
+      if (data.tableId && data.tableId !== STATE.tableId) {
+        await loadFields(data.tableId);
+      }
       if (data.recordId) {
         const item = document.querySelector('[data-rid="' + data.recordId + '"]');
         if (item) selectRec(data.recordId, item);
       }
     });
 
-    const sel0 = await bt.base.getSelection();
+    const sel0 = await bitable.base.getSelection();
     if (sel0.tableId) sel.value = sel0.tableId;
-    await onTableChange();
+    await loadFields(sel0.tableId || tables[0]?.id);
 
   } catch(e) {
-    log('✗ ' + e.message);
-    showSt('cfg-status', 'er', e.message);
+    log('✗ 错误: ' + e.message);
+    showSt('cfg-status', 'er', '初始化失败: ' + e.message);
   }
 }
 
-window.onTableChange = async function() {
-  const id = document.getElementById('sel-table').value;
-  if (id) await loadFields(id);
-};
-
 async function loadFields(tableId) {
+  if (!tableId) return;
   STATE.tableId = tableId;
+  document.getElementById('sel-table').value = tableId;
   try {
-    const bt = window.bitable;
-    const table = await bt.base.getTable(tableId);
+    const table = await bitable.base.getTable(tableId);
     STATE.table = table;
     const fields = await table.getFieldMetaList();
-    const att = fields.filter(f => f.type === 17); // 17 = Attachment
-    log('附件字段: ' + att.map(f => f.name).join(', '));
+    const att = fields.filter(f => f.type === FieldType.Attachment);
+    log('附件字段: ' + (att.map(f => f.name).join(', ') || '无'));
 
     const opts = att.length
       ? att.map(f => '<option value="' + f.id + '">' + f.name + '</option>').join('')
@@ -177,7 +175,7 @@ async function loadFields(tableId) {
 async function loadRecs(table) {
   document.getElementById('rec-card').classList.remove('hidden');
   const list = document.getElementById('rec-list');
-  list.innerHTML = '<div class="st if"><div class="dot"></div><span>加载中…</span></div>';
+  list.innerHTML = '<div class="st if"><div class="dot"></div><span>加载记录中…</span></div>';
   try {
     const ids = await table.getRecordIdList();
     const show = ids.slice(0, 50);
@@ -189,9 +187,12 @@ async function loadRecs(table) {
       d.onclick = () => selectRec(rid, d);
       list.appendChild(d);
     });
-    if (ids.length > 50) list.insertAdjacentHTML('beforeend', '<div class="st wn" style="margin-top:6px"><div class="dot"></div><span>仅显示前50条</span></div>');
+    if (ids.length > 50) {
+      list.insertAdjacentHTML('beforeend',
+        '<div class="st wn" style="margin-top:6px"><div class="dot"></div><span>仅显示前50条</span></div>');
+    }
 
-    // 异步加载图片数量徽章
+    // 异步加载图片数量
     const srcId = document.getElementById('sel-src').value;
     if (srcId) {
       const field = await table.getField(srcId);
@@ -205,13 +206,14 @@ async function loadRecs(table) {
     }
 
     // 自动选中当前记录
-    const sel = await window.bitable.base.getSelection();
+    const sel = await bitable.base.getSelection();
     if (sel.recordId && show.includes(sel.recordId)) {
       const item = list.querySelector('[data-rid="' + sel.recordId + '"]');
       if (item) selectRec(sel.recordId, item);
     }
   } catch(e) {
     log('✗ loadRecs: ' + e.message);
+    list.innerHTML = '<div class="st er"><div class="dot"></div><span>' + e.message + '</span></div>';
   }
 }
 
@@ -255,20 +257,26 @@ async function loadImgs(recordId) {
   }
 }
 
+// 暴露给普通 script 调用
+window.onTableChange = async function() {
+  const id = document.getElementById('sel-table').value;
+  if (id) await loadFields(id);
+};
+
 window.openEditor = function() {
   const dstId = document.getElementById('sel-dst').value;
   if (!STATE.images.length) { alert('请先选择有图片的记录'); return; }
   if (!dstId) { alert('请先选择保存结果的目标字段'); return; }
   sessionStorage.setItem('collage_images', JSON.stringify(STATE.images));
   sessionStorage.setItem('collage_config', JSON.stringify({
-    tableId: STATE.tableId, recordId: STATE.recordId, dstFieldId: dstId
+    tableId: STATE.tableId,
+    recordId: STATE.recordId,
+    dstFieldId: dstId,
   }));
   window.open('./editor.html', '_blank', 'width=1280,height=800,resizable=yes');
 };
 
 init();
 </script>
-
-<!-- 注意：window.bitable 由飞书多维表格宿主环境自动注入，无需引入外部脚本 -->
 </body>
 </html>
