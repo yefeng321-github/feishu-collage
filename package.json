@@ -2,13 +2,9 @@
   "name": "feishu-collage",
   "version": "1.0.0",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build"
+    "build": "node build.js"
   },
   "dependencies": {
     "@lark-base-open/js-sdk": "*"
-  },
-  "devDependencies": {
-    "vite": "^5.0.0"
   }
 }
