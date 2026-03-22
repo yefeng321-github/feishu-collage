@@ -138,7 +138,7 @@ const cv = document.getElementById('cv');
 
 // 初始化图片库
 window.addEventListener('load', () => {
-  const imgs = JSON.parse(sessionStorage.getItem('collage_images') || '[]');
+  const imgs = JSON.parse(localStorage.getItem('collage_images') || '[]');
   if (!imgs.length) {
     setMsg('⚠ 没有图片，请从飞书插件边栏打开');
     return;
@@ -159,7 +159,7 @@ cv.addEventListener('dragover', e => e.preventDefault());
 cv.addEventListener('drop', e => {
   e.preventDefault();
   const idx = e.dataTransfer.getData('idx'); if (idx === '') return;
-  const imgs = JSON.parse(sessionStorage.getItem('collage_images') || '[]');
+  const imgs = JSON.parse(localStorage.getItem('collage_images') || '[]');
   const img = imgs[+idx];
   const r = cv.getBoundingClientRect();
   addImg(img.url, img.name, e.clientX-r.left-100, e.clientY-r.top-75, 200, 150);
@@ -241,7 +241,7 @@ function renderBlob(){return new Promise((res,rej)=>{const off=document.createEl
 function drawTexts(ctx,sorted){sorted.forEach(el=>{if(el.type!=='txt')return;ctx.save();ctx.globalAlpha=el.o;ctx.translate(el.x+el.w/2,el.y+el.h/2);ctx.rotate(el.r*Math.PI/180);if(!el.bt){ctx.fillStyle=el.bc||'#fff';ctx.fillRect(-el.w/2,-el.h/2,el.w,el.h);}ctx.font=(el.bold?'bold ':'')+( el.fs||24)+'px -apple-system,"PingFang SC","Microsoft Yahei",sans-serif';ctx.fillStyle=el.fc||'#000';ctx.textBaseline='middle';const lines=(el.text||'').split('\n'),lh=(el.fs||24)*1.4,tot=lines.length*lh;lines.forEach((line,i)=>ctx.fillText(line,-el.w/2+6,-tot/2+lh*(i+0.5)));ctx.restore();});}
 
 async function saveToFeishu(){
-  const config=JSON.parse(sessionStorage.getItem('collage_config')||'{}');
+  const config=JSON.parse(localStorage.getItem('collage_config')||'{}');
   if(!config.tableId){alert('未获取到配置，请关闭后重新从边栏打开');return;}
   showProg('渲染画布…',10,'合成图片中');
   try{
