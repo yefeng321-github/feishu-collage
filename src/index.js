@@ -65,6 +65,7 @@ async function loadImages(recordId) {
 }
 
 async function init() {
+  window.__plugin._bitable = bitable;
   try {
     const table = await bitable.base.getActiveTable();
     S.table = table;
