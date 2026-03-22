@@ -119,16 +119,21 @@ let els=[],selId=null,idCtr=1,cvW=1200,cvH=900,drag=null,resize=null,rot=null;
 const cv=document.getElementById('cv');
 
 window.addEventListener('load',()=>{
-  const imgs=JSON.parse(localStorage.getItem('collage_images')||'[]');
-  if(!imgs.length){setMsg('⚠ 没有图片，请从飞书插件边栏重新打开');return;}
-  const lib=document.getElementById('lib');
-  imgs.forEach((img,i)=>{
-    const d=document.createElement('div');d.className='li';d.draggable=true;
-    d.innerHTML='<img src="'+img.url+'"><div class="ln">'+img.name+'</div>';
-    d.addEventListener('dragstart',e=>e.dataTransfer.setData('idx',i));
-    lib.appendChild(d);
-  });
-  setMsg('从左侧拖拽图片到画布 · 双击文字编辑 · Del 删除');updSb();
+  // 用 200ms 延迟确保 opener 的 localStorage.setItem 已完成
+  setTimeout(()=>{
+    const imgs=JSON.parse(localStorage.getItem('collage_images')||'[]');
+    if(!imgs.length){setMsg('⚠ 没有图片，请从飞书插件边栏重新打开');return;}
+    const lib=document.getElementById('lib');
+    imgs.forEach((img,i)=>{
+      const d=document.createElement('div');d.className='li';d.draggable=true;
+      d.innerHTML='<img src="'+img.url+'"><div class="ln">'+img.name+'</div>';
+      d.addEventListener('dragstart',e=>e.dataTransfer.setData('idx',i));
+      lib.appendChild(d);
+    });
+    setMsg('从左侧拖拽图片到画布 · 双击文字编辑 · Del 删除');updSb();
+  }, 200);
+});
+  setMsg('从左侧拖拽图片到画布 · 双击文字编辑 · Del 删除');updSb(); }, 300);
 });
 
 cv.addEventListener('dragover',e=>e.preventDefault());
