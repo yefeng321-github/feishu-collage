@@ -121,7 +121,25 @@ const cv=document.getElementById('cv');
 window.addEventListener('load',()=>{
   // 用 200ms 延迟确保 opener 的 localStorage.setItem 已完成
   setTimeout(()=>{
-    const imgs=JSON.parse(localStorage.getItem('collage_images')||'[]');
+    // 调试：先从 opener 直接读
+    let imgs = [];
+    try {
+      // 方法1：从 opener 的内存直接拿
+      if (window.opener && window.opener.S_IMAGES) {
+        imgs = window.opener.S_IMAGES;
+        console.log('Got images from opener.S_IMAGES:', imgs.length);
+      }
+    } catch(e) { console.log('opener error:', e.message); }
+    
+    // 方法2：从 localStorage 读
+    if (!imgs.length) {
+      const raw = localStorage.getItem('collage_images');
+      console.log('localStorage raw:', raw ? raw.slice(0,100) : 'null');
+      imgs = JSON.parse(raw || '[]');
+    }
+    
+    console.log('Final imgs count:', imgs.length);
+    
     if(!imgs.length){setMsg('⚠ 没有图片，请从飞书插件边栏重新打开');return;}
     const lib=document.getElementById('lib');
     imgs.forEach((img,i)=>{
@@ -131,7 +149,7 @@ window.addEventListener('load',()=>{
       lib.appendChild(d);
     });
     setMsg('从左侧拖拽图片到画布 · 双击文字编辑 · Del 删除');updSb();
-  }, 200);
+  }, 500);
 });
   setMsg('从左侧拖拽图片到画布 · 双击文字编辑 · Del 删除');updSb(); }, 300);
 });
