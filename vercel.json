@@ -1,9 +1,5 @@
 {
-  "buildCommand": "npm install && npm run build",
+  "buildCommand": "npm run build",
   "outputDirectory": "dist",
-  "framework": null,
-  "rewrites": [
-    { "source": "/editor", "destination": "/editor.html" },
-    { "source": "/editor.html", "destination": "/editor.html" }
-  ]
+  "framework": null
 }
