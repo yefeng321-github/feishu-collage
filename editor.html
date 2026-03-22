@@ -3,120 +3,72 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>画布编辑器</title>
+<title>图片拼图</title>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-:root{--bg:#f0f1f3;--tb:#fff;--s1:#f5f6f7;--s2:#ebebeb;--bd:#dee0e3;--ac:rgb(20,86,240);--ac2:#7b61ff;--tx:#1f2329;--tx2:#646a73;--ok:#2ea121;--er:#f54a45;}
-@media(prefers-color-scheme:dark){:root{--bg:#1a1a1a;--tb:#252525;--s1:#2a2a2a;--s2:#333;--bd:#434343;--ac:#4571e1;--tx:#e0e0e0;--tx2:#9e9e9e;}}
-body{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Tahoma,"PingFang SC","Microsoft Yahei",Arial,sans-serif;background:var(--bg);color:var(--tx);font-size:13px;height:100vh;display:flex;flex-direction:column;overflow:hidden;}
-#tb{display:flex;align-items:center;gap:4px;padding:0 12px;height:48px;flex-shrink:0;background:var(--tb);border-bottom:1px solid var(--bd);overflow-x:auto;}
-#tb::-webkit-scrollbar{height:0;}
-.logo{font-size:14px;font-weight:600;color:var(--tx);white-space:nowrap;margin-right:6px;}
-.sep{width:1px;height:20px;background:var(--bd);margin:0 4px;flex-shrink:0;}
-.sp{flex:1;min-width:4px;}
-.tbtn{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:6px;border:1px solid transparent;background:transparent;color:var(--tx);font-family:inherit;font-size:12px;cursor:pointer;transition:all .12s;white-space:nowrap;flex-shrink:0;}
-.tbtn:hover{background:var(--s2);}
-.tbtn.pri{background:var(--ac);color:#fff;border-color:var(--ac);}
-.tbtn.pri:hover{opacity:.88;}
-.tbtn.danger{color:var(--er);}
-.tbtn.danger:hover{background:rgba(245,74,69,.08);}
-.tbtn.active{background:var(--ac);color:#fff;border-color:var(--ac);}
-.tb-inp{background:var(--s1);border:1px solid var(--bd);border-radius:5px;color:var(--tx);padding:4px 6px;font-size:12px;font-family:inherit;outline:none;width:46px;text-align:center;}
-.tb-inp:focus{border-color:var(--ac);}
-.tb-lbl{font-size:11px;color:var(--tx2);white-space:nowrap;}
-#body{display:flex;flex:1;overflow:hidden;}
-#lp{width:120px;background:var(--tb);border-right:1px solid var(--bd);overflow-y:auto;flex-shrink:0;}
-#lp::-webkit-scrollbar{width:3px;}
-#lp::-webkit-scrollbar-thumb{background:var(--bd);}
-.lp-title{font-size:11px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.06em;padding:10px 10px 6px;}
-.lib-item{padding:6px 8px;cursor:grab;border-radius:5px;margin:2px 5px;transition:background .12s;}
-.lib-item:hover{background:var(--s2);}
-.lib-item img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:4px;border:1px solid var(--bd);display:block;pointer-events:none;}
-.lib-name{font-size:10px;color:var(--tx2);text-align:center;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-#cw{flex:1;overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--bg);background-image:linear-gradient(var(--bd) 1px,transparent 1px),linear-gradient(90deg,var(--bd) 1px,transparent 1px);background-size:24px 24px;user-select:none;}
-#cv{position:relative;box-shadow:0 4px 24px rgba(0,0,0,.12);overflow:hidden;}
-.el{position:absolute;cursor:move;user-select:none;}
-.el.sel{outline:2px solid var(--ac);}
-.el img{width:100%;height:100%;object-fit:fill;display:block;pointer-events:none;}
-.hdl{position:absolute;width:9px;height:9px;background:#fff;border:2px solid var(--ac);border-radius:2px;z-index:10;display:none;box-shadow:0 1px 3px rgba(0,0,0,.15);}
-.el.sel .hdl{display:block;}
-.hdl.tl{top:-5px;left:-5px;cursor:nw-resize;}.hdl.tr{top:-5px;right:-5px;cursor:ne-resize;}.hdl.bl{bottom:-5px;left:-5px;cursor:sw-resize;}.hdl.br{bottom:-5px;right:-5px;cursor:se-resize;}
-.hdl.rot{top:-24px;left:calc(50% - 4px);cursor:grab;background:var(--ac2);border-color:var(--ac2);}
-.txt{position:absolute;cursor:move;user-select:none;padding:3px 6px;border-radius:3px;min-width:50px;min-height:22px;white-space:pre-wrap;word-break:break-all;line-height:1.4;}
-.txt.sel{outline:2px solid var(--ac2);}.txt.edit{outline:2px solid var(--ok);cursor:text;}
-#rp{width:158px;background:var(--tb);border-left:1px solid var(--bd);padding:10px;overflow-y:auto;flex-shrink:0;}
-.pr-s{margin-bottom:12px;}.pr-t{font-size:10px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:7px;}
-.pr-r{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;gap:4px;}
-.pr-l{font-size:11px;color:var(--tx2);}
-.pr-i{background:var(--s1);border:1px solid var(--bd);border-radius:4px;color:var(--tx);padding:3px 6px;font-size:12px;font-family:inherit;outline:none;width:70px;text-align:right;}
-.pr-i:focus{border-color:var(--ac);}
-input[type=color].pr-i{padding:1px 2px;height:26px;cursor:pointer;}
-input[type=range].pr-i{padding:0;height:20px;cursor:pointer;accent-color:var(--ac);}
-.ns{font-size:12px;color:var(--tx2);text-align:center;padding:20px 0;}
-#sb{height:26px;background:var(--tb);border-top:1px solid var(--bd);display:flex;align-items:center;padding:0 12px;gap:16px;flex-shrink:0;font-size:11px;color:var(--tx2);}
-#prog{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;align-items:center;justify-content:center;}
-#prog.open{display:flex;}
-.pb{background:var(--tb);border:1px solid var(--bd);border-radius:10px;padding:24px 28px;min-width:240px;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.12);}
-.pb h3{font-size:14px;margin-bottom:12px;}.pt{height:4px;background:var(--s2);border-radius:99px;overflow:hidden;}
-.pf{height:100%;background:var(--ac);border-radius:99px;transition:width .3s;}
-.pm{font-size:12px;color:var(--tx2);margin-top:8px;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Tahoma,"PingFang SC","Microsoft Yahei",Arial,sans-serif;
+  font-size:14px;line-height:1.5;padding:16px;background:#f5f6f7;color:#1f2329;
+}
+@media(prefers-color-scheme:dark){body{background:#1a1a1a;color:#e0e0e0;}.card{background:#252525;border-color:#434343;}select{background:#2a2a2a;border-color:#434343;color:#e0e0e0;}}
+.title{font-size:16px;font-weight:600;margin-bottom:2px;}
+.sub{font-size:12px;color:#646a73;margin-bottom:16px;}
+.card{background:#fff;border:1px solid #dee0e3;border-radius:6px;padding:14px;margin-bottom:12px;}
+.card-title{font-size:11px;font-weight:600;color:#646a73;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;}
+label{display:block;font-size:12px;color:#646a73;margin-bottom:4px;margin-top:10px;}
+label:first-of-type{margin-top:0;}
+select{width:100%;background:#fff;border:1px solid #dee0e3;border-radius:6px;color:#1f2329;padding:7px 10px;font-size:13px;font-family:inherit;outline:none;cursor:pointer;transition:border-color .15s;}
+select:focus{border-color:rgb(20,86,240);}
+.btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:9px 16px;border-radius:6px;border:none;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;margin-top:12px;}
+.btn-primary{background:rgb(20,86,240);color:#fff;}
+.btn-primary:hover{opacity:.88;}
+.status{display:flex;align-items:flex-start;gap:7px;padding:8px 10px;border-radius:6px;font-size:12px;margin-top:10px;}
+.s-ok{background:#f0faf0;color:#2ea121;border:1px solid rgba(46,161,33,.2);}
+.s-err{background:#fff0f0;color:#f54a45;border:1px solid rgba(245,74,69,.2);}
+.s-info{background:#f0f4ff;color:rgb(20,86,240);border:1px solid rgba(20,86,240,.2);}
+.s-warn{background:#fffbf0;color:#f5a623;border:1px solid rgba(245,166,35,.2);}
+.sdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.s-ok .sdot{background:#2ea121;}.s-err .sdot{background:#f54a45;}.s-info .sdot{background:rgb(20,86,240);}.s-warn .sdot{background:#f5a623;}
+.img-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:8px;margin-top:10px;}
+.img-thumb{aspect-ratio:1;border-radius:6px;overflow:hidden;border:1px solid #dee0e3;position:relative;}
+.img-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+.img-thumb-name{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.6);color:#fff;font-size:9px;padding:2px 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hint{text-align:center;color:#bbbfc4;font-size:13px;padding:20px 0 8px;}
+.hint-icon{font-size:28px;margin-bottom:6px;}
+.hidden{display:none!important;}
 </style>
 </head>
 <body>
-<div id="tb">
-  <span class="logo">🖼 画布编辑器</span>
-  <div class="sep"></div>
-  <button class="tbtn" onclick="window.__editor.addText()">＋ 文字</button>
-  <div class="sep"></div>
-  <button class="tbtn" onclick="window.__editor.bringFwd()">↑ 上层</button>
-  <button class="tbtn" onclick="window.__editor.sendBk()">↓ 下层</button>
-  <button class="tbtn danger" onclick="window.__editor.delSel()">✕ 删除</button>
-  <div class="sep"></div>
-  <span class="tb-lbl">画布</span>
-  <input class="tb-inp" id="cvW" type="number" value="1200" onchange="window.__editor.resizeCv()">
-  <span class="tb-lbl">×</span>
-  <input class="tb-inp" id="cvH" type="number" value="900" onchange="window.__editor.resizeCv()">
-  <div class="sep"></div>
-  <button class="tbtn" onclick="window.__editor.preset(1200,900)">4:3</button>
-  <button class="tbtn" onclick="window.__editor.preset(1920,1080)">16:9</button>
-  <button class="tbtn" onclick="window.__editor.preset(1080,1080)">1:1</button>
-  <button class="tbtn" onclick="window.__editor.preset(1080,1920)">9:16</button>
-  <div class="sep"></div>
-  <span class="tb-lbl">背景</span>
-  <input type="color" class="tb-inp" id="cvBg" value="#ffffff" onchange="window.__editor.setBg()" style="width:34px;padding:1px 3px;height:28px;cursor:pointer;">
-  <div class="sp"></div>
-  <button class="tbtn" onclick="window.__editor.autoLayout()">🔲 自动排列</button>
-  <button class="tbtn" onclick="window.close()">← 返回</button>
-  <button class="tbtn pri" onclick="window.__editor.save()">⬆ 保存到飞书</button>
+
+<div class="title">🖼 图片拼图</div>
+<p class="sub">点击含图片的行 → 自动加载 → 画布编排 → 保存</p>
+
+<div class="card">
+  <div class="card-title">字段配置</div>
+  <label>来源字段（附件/图片）</label>
+  <select id="sel-src" onchange="window.__plugin.onSrcChange()">
+    <option value="">-- 初始化中 --</option>
+  </select>
+  <label>保存结果到字段（附件）</label>
+  <select id="sel-dst">
+    <option value="">-- 初始化中 --</option>
+  </select>
+  <div id="cfg-status" class="hidden"></div>
 </div>
-<div id="body">
-  <div id="lp"><div class="lp-title">图片库</div><div id="lib"></div></div>
-  <div id="cw"><div id="cv" style="width:1200px;height:900px;background:#ffffff;"></div></div>
-  <div id="rp">
-    <div id="ns" class="ns">选择元素<br>查看属性</div>
-    <div id="props" style="display:none">
-      <div class="pr-s">
-        <div class="pr-t">变换</div>
-        <div class="pr-r"><span class="pr-l">X</span><input class="pr-i" id="px" type="number" onchange="window.__editor.ap('x',+this.value)"></div>
-        <div class="pr-r"><span class="pr-l">Y</span><input class="pr-i" id="py" type="number" onchange="window.__editor.ap('y',+this.value)"></div>
-        <div class="pr-r"><span class="pr-l">W</span><input class="pr-i" id="pw" type="number" onchange="window.__editor.ap('w',+this.value)"></div>
-        <div class="pr-r"><span class="pr-l">H</span><input class="pr-i" id="ph" type="number" onchange="window.__editor.ap('h',+this.value)"></div>
-        <div class="pr-r"><span class="pr-l">旋转°</span><input class="pr-i" id="pr" type="number" onchange="window.__editor.ap('r',+this.value)"></div>
-      </div>
-      <div class="pr-s"><div class="pr-t">透明度</div><div class="pr-r"><input class="pr-i" id="po" type="range" min="0" max="1" step="0.01" onchange="window.__editor.ap('o',+this.value)"></div></div>
-      <div class="pr-s" id="txt-props" style="display:none">
-        <div class="pr-t">文字</div>
-        <div class="pr-r"><span class="pr-l">字号</span><input class="pr-i" id="pfs" type="number" value="24" min="8" onchange="window.__editor.atp('fs',+this.value)"></div>
-        <div class="pr-r"><span class="pr-l">颜色</span><input class="pr-i" type="color" id="pfc" value="#000000" onchange="window.__editor.atp('fc',this.value)"></div>
-        <div class="pr-r"><span class="pr-l">背景</span><input class="pr-i" type="color" id="pbc" value="#ffffff" onchange="window.__editor.atp('bc',this.value)"></div>
-        <div class="pr-r"><span class="pr-l">透明背景</span><input type="checkbox" id="pbt" onchange="window.__editor.atp('bt',this.checked)"></div>
-        <div class="pr-r"><span class="pr-l">粗体</span><button class="tbtn" id="pbold" onclick="window.__editor.toggleBold()">B</button></div>
-      </div>
-    </div>
+
+<div class="card">
+  <div class="card-title">图片预览</div>
+  <div id="hint" class="hint">
+    <div class="hint-icon">👆</div>
+    请点击表格中含图片的行
   </div>
+  <div id="img-status" class="hidden"></div>
+  <div id="img-grid" class="img-grid"></div>
+  <button id="btn-editor" class="btn btn-primary hidden" onclick="window.__plugin.openEditor()">
+    🎨 打开画布编辑器
+  </button>
 </div>
-<div id="sb"><span id="sb-el">元素: 0</span><span id="sb-cv">画布: 1200×900</span><span id="sb-msg">从左侧拖拽图片到画布 · 双击文字编辑 · Del 删除</span></div>
-<div id="prog"><div class="pb"><h3 id="pt">处理中…</h3><div class="pt"><div class="pf" id="pf" style="width:0%"></div></div><div class="pm" id="pm">请稍候</div></div></div>
-<script type="module" src="./src/editor.js"></script>
+
+<script type="module" src="./src/index.js"></script>
 </body>
 </html>
