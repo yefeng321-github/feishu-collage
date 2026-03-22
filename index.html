@@ -142,8 +142,8 @@ window.openEditor = () => {
   const dstId = el('sel-dst').value;
   if (!S.images.length) { alert('请先选择一行有图片的记录'); return; }
   if (!dstId) { alert('请先选择保存目标字段'); return; }
-  sessionStorage.setItem('collage_images', JSON.stringify(S.images));
-  sessionStorage.setItem('collage_config', JSON.stringify({
+  localStorage.setItem('collage_images', JSON.stringify(S.images));
+  localStorage.setItem('collage_config', JSON.stringify({
     tableId: S.tableId, recordId: S.recordId, dstFieldId: dstId
   }));
   // 把 bitable 挂到 window 上，编辑器窗口通过 window.opener.S_BT 访问
