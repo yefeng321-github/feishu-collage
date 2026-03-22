@@ -260,6 +260,23 @@ async function init(){
   }catch(e){showSt('cfg-st','er','初始化失败：'+e.message);}
 }
 
+
+// 把编辑器函数暴露到 window，供 onclick 调用
+window.openEditor = window.openEditor; // already set
+window.closeEditor = closeEditor;
+window.eAddText = eAddText;
+window.eBringFwd = eBringFwd;
+window.eSendBk = eSendBk;
+window.eDelSel = eDelSel;
+window.eResizeCv = eResizeCv;
+window.ePreset = ePreset;
+window.eSetBg = eSetBg;
+window.eAutoLayout = eAutoLayout;
+window.eSave = eSave;
+window.eAp = eAp;
+window.eAtp = eAtp;
+window.eToggleBold = eToggleBold;
+
 init();
 
 // ══ 编辑器逻辑 ═══════════════════════════════════
