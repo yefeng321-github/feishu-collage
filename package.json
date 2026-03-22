@@ -6,5 +6,8 @@
   },
   "dependencies": {
     "@lark-base-open/js-sdk": "*"
+  },
+  "devDependencies": {
+    "rollup": "^4.0.0"
   }
 }
