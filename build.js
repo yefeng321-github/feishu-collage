@@ -3,6 +3,25 @@ const path = require('path');
 
 const sdkRoot = 'node_modules/@lark-base-open/js-sdk';
 
+// 列出目录所有内容（包括子目录）
+function listAll(dir, indent = '') {
+  if (!fs.existsSync(dir)) return;
+  for (const f of fs.readdirSync(dir)) {
+    const full = path.join(dir, f);
+    const stat = fs.statSync(full);
+    if (stat.isDirectory()) {
+      console.log(indent + '[DIR] ' + f);
+      listAll(full, indent + '  ');
+    } else {
+      console.log(indent + f + ' (' + Math.round(stat.size/1024) + 'KB)');
+    }
+  }
+}
+
+console.log('=== SDK Structure ===');
+listAll(sdkRoot);
+
+// 递归找所有 .js 文件
 function findJs(dir) {
   const results = [];
   if (!fs.existsSync(dir)) return results;
@@ -10,39 +29,26 @@ function findJs(dir) {
     const full = path.join(dir, f);
     const stat = fs.statSync(full);
     if (stat.isDirectory()) results.push(...findJs(full));
-    else if (f.endsWith('.js')) results.push({ path: full, size: stat.size });
+    else if (f.endsWith('.js') || f.endsWith('.mjs') || f.endsWith('.cjs')) {
+      results.push({ path: full, size: stat.size });
+    }
   }
   return results;
 }
 
-console.log('SDK dir exists:', fs.existsSync(sdkRoot));
 const allJs = findJs(sdkRoot);
-console.log('All JS files:');
-allJs.forEach(f => console.log(' ', f.path, Math.round(f.size/1024) + 'KB'));
+console.log('\n=== All JS/MJS/CJS files ===');
+allJs.forEach(f => console.log(f.path, Math.round(f.size/1024) + 'KB'));
 
-const candidates = [
-  'node_modules/@lark-base-open/js-sdk/dist/js-sdk.umd.js',
-  'node_modules/@lark-base-open/js-sdk/dist/js-sdk.umd.min.js',
-  'node_modules/@lark-base-open/js-sdk/dist/index.umd.js',
-  'node_modules/@lark-base-open/js-sdk/dist/index.umd.min.js',
-];
-
-let sdkCode = null;
-for (const c of candidates) {
-  if (fs.existsSync(c)) {
-    sdkCode = fs.readFileSync(c, 'utf8');
-    console.log('Using:', c, Math.round(sdkCode.length/1024) + 'KB');
-    break;
-  }
+// 找最大的 js 文件作为 SDK
+if (allJs.length === 0) {
+  console.error('ERROR: No JS files found in SDK!');
+  process.exit(1);
 }
 
-if (!sdkCode && allJs.length > 0) {
-  allJs.sort((a, b) => b.size - a.size);
-  sdkCode = fs.readFileSync(allJs[0].path, 'utf8');
-  console.log('Fallback:', allJs[0].path, Math.round(sdkCode.length/1024) + 'KB');
-}
-
-if (!sdkCode) { console.error('ERROR: No SDK found!'); process.exit(1); }
+allJs.sort((a, b) => b.size - a.size);
+const sdkCode = fs.readFileSync(allJs[0].path, 'utf8');
+console.log('\nUsing:', allJs[0].path, Math.round(sdkCode.length/1024) + 'KB');
 
 if (!fs.existsSync('dist')) fs.mkdirSync('dist');
 
