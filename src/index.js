@@ -65,7 +65,6 @@ async function loadImages(recordId) {
 }
 
 async function init() {
-  window.__plugin._bitable = bitable;
   try {
     const table = await bitable.base.getActiveTable();
     S.table = table;
@@ -95,6 +94,7 @@ async function init() {
   }
 }
 
+// 暴露 bitable 给编辑器窗口通过 window.opener 调用
 window.__plugin = {
   _bitable: bitable,
   onSrcChange() { if (S.recordId) loadImages(S.recordId); },
