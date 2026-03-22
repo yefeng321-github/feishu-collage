@@ -1,5 +1,3 @@
-
-
 let els = [], selId = null, idCtr = 1, cvW = 1200, cvH = 900;
 let drag = null, resize = null, rot = null;
 const cv = document.getElementById('cv');
