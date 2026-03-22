@@ -4,66 +4,37 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>图片拼图</title>
-<!-- 飞书官方推荐：直接用 script 标签加载 SDK，HTTPS 域名无限制 -->
-<script src="https://cdn.jsdelivr.net/npm/@lark-base-open/js-sdk/dist/js-sdk.umd.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{
   font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Tahoma,"PingFang SC","Microsoft Yahei",Arial,sans-serif;
-  font-size:14px;line-height:1.5;padding:16px;min-width:0;
-  background:#f5f6f7;color:#1f2329;
+  font-size:14px;line-height:1.5;padding:16px;background:#f5f6f7;color:#1f2329;
 }
-@media(prefers-color-scheme:dark){
-  body{background:#1a1a1a;color:#e0e0e0;}
-  .card{background:#252525;border-color:#434343;}
-  select{background:#2a2a2a;border-color:#434343;color:#e0e0e0;}
-  .hint{border-color:#434343;color:#9e9e9e;}
-  .status-ok{background:#0d2b0d;border-color:rgba(46,161,33,.3);}
-  .status-err{background:#2b0d0d;border-color:rgba(245,74,69,.3);}
-  .status-info{background:#0d1a3a;border-color:rgba(20,86,240,.3);}
-  .status-warn{background:#2b1f0d;border-color:rgba(245,166,35,.3);}
-}
+@media(prefers-color-scheme:dark){body{background:#1a1a1a;color:#e0e0e0;}.card{background:#252525;border-color:#434343;}select{background:#2a2a2a;border-color:#434343;color:#e0e0e0;}}
 .title{font-size:16px;font-weight:600;margin-bottom:2px;}
 .sub{font-size:12px;color:#646a73;margin-bottom:16px;}
 .card{background:#fff;border:1px solid #dee0e3;border-radius:6px;padding:14px;margin-bottom:12px;}
 .card-title{font-size:11px;font-weight:600;color:#646a73;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;}
 label{display:block;font-size:12px;color:#646a73;margin-bottom:4px;margin-top:10px;}
 label:first-of-type{margin-top:0;}
-select{
-  width:100%;background:#fff;border:1px solid #dee0e3;border-radius:6px;
-  color:#1f2329;padding:7px 10px;font-size:13px;font-family:inherit;
-  outline:none;cursor:pointer;transition:border-color .15s;
-}
+select{width:100%;background:#fff;border:1px solid #dee0e3;border-radius:6px;color:#1f2329;padding:7px 10px;font-size:13px;font-family:inherit;outline:none;cursor:pointer;transition:border-color .15s;}
 select:focus{border-color:rgb(20,86,240);}
-.btn{
-  display:flex;align-items:center;justify-content:center;gap:6px;
-  width:100%;padding:9px 16px;border-radius:6px;border:none;
-  font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;
-  margin-top:12px;transition:opacity .15s;
-}
+.btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:9px 16px;border-radius:6px;border:none;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;margin-top:12px;}
 .btn-primary{background:rgb(20,86,240);color:#fff;}
 .btn-primary:hover{opacity:.88;}
-.status{
-  display:flex;align-items:flex-start;gap:7px;
-  padding:8px 10px;border-radius:6px;font-size:12px;margin-top:10px;
-}
-.status-ok {background:#f0faf0;color:#2ea121;border:1px solid rgba(46,161,33,.2);}
-.status-err{background:#fff0f0;color:#f54a45;border:1px solid rgba(245,74,69,.2);}
-.status-info{background:#f0f4ff;color:rgb(20,86,240);border:1px solid rgba(20,86,240,.2);}
-.status-warn{background:#fffbf0;color:#f5a623;border:1px solid rgba(245,166,35,.2);}
-.status-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px;}
-.status-ok .status-dot{background:#2ea121;}
-.status-err .status-dot{background:#f54a45;}
-.status-info .status-dot{background:rgb(20,86,240);}
-.status-warn .status-dot{background:#f5a623;}
+.status{display:flex;align-items:flex-start;gap:7px;padding:8px 10px;border-radius:6px;font-size:12px;margin-top:10px;}
+.s-ok{background:#f0faf0;color:#2ea121;border:1px solid rgba(46,161,33,.2);}
+.s-err{background:#fff0f0;color:#f54a45;border:1px solid rgba(245,74,69,.2);}
+.s-info{background:#f0f4ff;color:rgb(20,86,240);border:1px solid rgba(20,86,240,.2);}
+.s-warn{background:#fffbf0;color:#f5a623;border:1px solid rgba(245,166,35,.2);}
+.sdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.s-ok .sdot{background:#2ea121;}.s-err .sdot{background:#f54a45;}.s-info .sdot{background:rgb(20,86,240);}.s-warn .sdot{background:#f5a623;}
 .img-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:8px;margin-top:10px;}
 .img-thumb{aspect-ratio:1;border-radius:6px;overflow:hidden;border:1px solid #dee0e3;position:relative;}
 .img-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
 .img-thumb-name{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.6);color:#fff;font-size:9px;padding:2px 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .hint{text-align:center;color:#bbbfc4;font-size:13px;padding:20px 0 8px;}
 .hint-icon{font-size:28px;margin-bottom:6px;}
-.spinner{width:14px;height:14px;border:2px solid #dee0e3;border-top-color:rgb(20,86,240);border-radius:50%;animation:spin .6s linear infinite;display:inline-block;margin-right:6px;vertical-align:middle;}
-@keyframes spin{to{transform:rotate(360deg)}}
 .hidden{display:none!important;}
 </style>
 </head>
@@ -75,7 +46,7 @@ select:focus{border-color:rgb(20,86,240);}
 <div class="card">
   <div class="card-title">字段配置</div>
   <label>来源字段（附件/图片）</label>
-  <select id="sel-src" onchange="onSrcChange()">
+  <select id="sel-src" onchange="window.__plugin.onSrcChange()">
     <option value="">-- 初始化中 --</option>
   </select>
   <label>保存结果到字段（附件）</label>
@@ -93,174 +64,11 @@ select:focus{border-color:rgb(20,86,240);}
   </div>
   <div id="img-status" class="hidden"></div>
   <div id="img-grid" class="img-grid"></div>
-  <button id="btn-editor" class="btn btn-primary hidden" onclick="openEditor()">
+  <button id="btn-editor" class="btn btn-primary hidden" onclick="window.__plugin.openEditor()">
     🎨 打开画布编辑器
   </button>
 </div>
 
-<script>
-// ── 状态 ──────────────────────────────────────────
-const S = { bt: null, FT: null, table: null, tableId: null, recordId: null, images: [] };
-
-function el(id){ return document.getElementById(id); }
-
-function showSt(id, type, msg){
-  const e = el(id);
-  e.className = 'status status-' + type;
-  e.innerHTML = '<div class="status-dot"></div><span>' + msg + '</span>';
-  e.classList.remove('hidden');
-}
-function hideSt(id){ el(id).classList.add('hidden'); }
-
-// ── 等待 SDK ──────────────────────────────────────
-// unpkg 的 UMD 包加载后会把 exports 挂到 window 上不同位置
-// 我们轮询检测，兼容所有情况
-function getSDK(){
-  // 方式1：标准 UMD 挂载
-  if(window.bitable) return {bt: window.bitable, FT: window.FieldType||{}};
-  // 方式2：命名空间挂载
-  const ns = window['@lark-base-open/js-sdk'];
-  if(ns && ns.bitable) return {bt: ns.bitable, FT: ns.FieldType||{}};
-  // 方式3：扫描所有全局变量
-  for(const k of Object.keys(window)){
-    const v = window[k];
-    if(v && typeof v === 'object' && v.bitable && v.bitable.base) return {bt: v.bitable, FT: v.FieldType||{}};
-  }
-  return null;
-}
-
-async function waitSDK(ms=8000){
-  const t0 = Date.now();
-  while(Date.now()-t0 < ms){
-    const sdk = getSDK();
-    if(sdk) return sdk;
-    await new Promise(r=>setTimeout(r,200));
-  }
-  return null;
-}
-
-// ── 初始化 ────────────────────────────────────────
-async function init(){
-  showSt('cfg-status','info','<span class="spinner"></span>初始化中…');
-
-  const sdk = await waitSDK();
-  if(!sdk){
-    showSt('cfg-status','err','SDK 加载失败，请检查网络后刷新插件');
-    return;
-  }
-
-  S.bt = sdk.bt; S.FT = sdk.FT;
-  hideSt('cfg-status');
-
-  try{
-    const table = await S.bt.base.getActiveTable();
-    S.table = table; S.tableId = table.id;
-    await loadFields(table);
-
-    // 监听行点击 / 表切换
-    S.bt.base.onSelectionChange(async ({data}) => {
-      if(data.tableId && data.tableId !== S.tableId){
-        S.tableId = data.tableId;
-        const t = await S.bt.base.getTable(data.tableId);
-        S.table = t;
-        await loadFields(t);
-      }
-      if(data.recordId && data.recordId !== S.recordId){
-        S.recordId = data.recordId;
-        await loadImgs(data.recordId);
-      }
-    });
-
-    // 当前已有选中记录
-    const sel = await S.bt.base.getSelection();
-    if(sel.recordId){ S.recordId = sel.recordId; await loadImgs(sel.recordId); }
-
-  }catch(e){
-    showSt('cfg-status','err','初始化失败：'+e.message);
-  }
-}
-
-// ── 加载附件字段 ──────────────────────────────────
-async function loadFields(table){
-  try{
-    const fields = await table.getFieldMetaList();
-    const ATT = S.FT.Attachment || 17;
-    const att = fields.filter(f=>f.type===ATT);
-
-    if(!att.length){
-      showSt('cfg-status','warn','当前表没有附件字段');
-      el('sel-src').innerHTML = '<option value="">-- 无附件字段 --</option>';
-      el('sel-dst').innerHTML = '<option value="">-- 无附件字段 --</option>';
-      return;
-    }
-    hideSt('cfg-status');
-
-    const opts = att.map(f=>'<option value="'+f.id+'">'+f.name+'</option>').join('');
-    el('sel-src').innerHTML = opts;
-    el('sel-dst').innerHTML = opts;
-    el('sel-src').value = att[0].id;
-    el('sel-dst').value = att.length > 1 ? att[1].id : att[0].id;
-
-  }catch(e){
-    showSt('cfg-status','err','加载字段失败：'+e.message);
-  }
-}
-
-window.onSrcChange = ()=>{ if(S.recordId) loadImgs(S.recordId); };
-
-// ── 加载图片 ──────────────────────────────────────
-async function loadImgs(recordId){
-  const srcId = el('sel-src').value;
-  if(!srcId || !S.table) return;
-
-  el('hint').classList.add('hidden');
-  el('img-grid').innerHTML = '';
-  el('btn-editor').classList.add('hidden');
-  showSt('img-status','info','加载图片中…');
-
-  try{
-    const field = await S.table.getField(srcId);
-    const atts = await field.getValue(recordId);
-
-    if(!atts||!atts.length){ showSt('img-status','warn','该行没有附件，请点击其他行'); return; }
-
-    const urls = await field.getAttachmentUrls(recordId);
-    S.images = atts.map((a,i)=>({
-      name:a.name, url:urls[i]||'', token:a.token,
-      size:a.size, type:a.type, permission:a.permission||null
-    })).filter(x=>x.url && x.type && x.type.startsWith('image/'));
-
-    if(!S.images.length){ showSt('img-status','warn','附件中没有图片格式的文件'); return; }
-
-    const grid = el('img-grid');
-    S.images.forEach(img=>{
-      const d = document.createElement('div');
-      d.className = 'img-thumb';
-      d.innerHTML = '<img src="'+img.url+'" loading="lazy"><div class="img-thumb-name">'+img.name+'</div>';
-      grid.appendChild(d);
-    });
-
-    showSt('img-status','ok','✓ 已加载 '+S.images.length+' 张图片');
-    el('btn-editor').classList.remove('hidden');
-
-  }catch(e){
-    showSt('img-status','err','加载失败：'+e.message);
-  }
-}
-
-// ── 打开编辑器 ────────────────────────────────────
-window.openEditor = ()=>{
-  const dstId = el('sel-dst').value;
-  if(!S.images.length){ alert('请先选择一行有图片的记录'); return; }
-  if(!dstId){ alert('请先选择保存目标字段'); return; }
-  sessionStorage.setItem('collage_images', JSON.stringify(S.images));
-  sessionStorage.setItem('collage_config', JSON.stringify({
-    tableId:S.tableId, recordId:S.recordId, dstFieldId:dstId
-  }));
-  window.open('./editor.html','_blank','width=1280,height=820,resizable=yes');
-};
-
-init();
-</script>
+<script type="module" src="./src/index.js"></script>
 </body>
 </html>
