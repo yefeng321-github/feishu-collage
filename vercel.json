@@ -2,8 +2,8 @@
   "buildCommand": "npm install && npm run build",
   "outputDirectory": "dist",
   "framework": null,
-  "routes": [
-    { "src": "/editor.html", "dest": "/editor.html" },
-    { "src": "/", "dest": "/index.html" }
+  "rewrites": [
+    { "source": "/editor", "destination": "/editor.html" },
+    { "source": "/editor.html", "destination": "/editor.html" }
   ]
 }
