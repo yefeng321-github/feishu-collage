@@ -6,35 +6,31 @@
 <title>图片拼图</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{
-  font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Tahoma,"PingFang SC","Microsoft Yahei",Arial,sans-serif;
-  font-size:14px;line-height:1.5;padding:16px;background:#f5f6f7;color:#1f2329;
-}
-@media(prefers-color-scheme:dark){body{background:#1a1a1a;color:#e0e0e0;}.card{background:#252525;border-color:#434343;}select{background:#2a2a2a;border-color:#434343;color:#e0e0e0;}}
+body{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue","PingFang SC","Microsoft Yahei",Arial,sans-serif;font-size:14px;line-height:1.5;padding:16px;background:#f5f6f7;color:#1f2329;}
+@media(prefers-color-scheme:dark){body{background:#1a1a1a;color:#e0e0e0;}.card{background:#252525!important;border-color:#434343!important;}select{background:#2a2a2a!important;border-color:#434343!important;color:#e0e0e0!important;}}
 .title{font-size:16px;font-weight:600;margin-bottom:2px;}
 .sub{font-size:12px;color:#646a73;margin-bottom:16px;}
 .card{background:#fff;border:1px solid #dee0e3;border-radius:6px;padding:14px;margin-bottom:12px;}
-.card-title{font-size:11px;font-weight:600;color:#646a73;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;}
+.ct{font-size:11px;font-weight:600;color:#646a73;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;}
 label{display:block;font-size:12px;color:#646a73;margin-bottom:4px;margin-top:10px;}
 label:first-of-type{margin-top:0;}
-select{width:100%;background:#fff;border:1px solid #dee0e3;border-radius:6px;color:#1f2329;padding:7px 10px;font-size:13px;font-family:inherit;outline:none;cursor:pointer;transition:border-color .15s;}
+select{width:100%;background:#fff;border:1px solid #dee0e3;border-radius:6px;color:#1f2329;padding:7px 10px;font-size:13px;font-family:inherit;outline:none;cursor:pointer;}
 select:focus{border-color:rgb(20,86,240);}
 .btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:9px 16px;border-radius:6px;border:none;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;margin-top:12px;}
-.btn-primary{background:rgb(20,86,240);color:#fff;}
-.btn-primary:hover{opacity:.88;}
-.status{display:flex;align-items:flex-start;gap:7px;padding:8px 10px;border-radius:6px;font-size:12px;margin-top:10px;}
-.s-ok{background:#f0faf0;color:#2ea121;border:1px solid rgba(46,161,33,.2);}
-.s-err{background:#fff0f0;color:#f54a45;border:1px solid rgba(245,74,69,.2);}
-.s-info{background:#f0f4ff;color:rgb(20,86,240);border:1px solid rgba(20,86,240,.2);}
-.s-warn{background:#fffbf0;color:#f5a623;border:1px solid rgba(245,166,35,.2);}
-.sdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px;}
-.s-ok .sdot{background:#2ea121;}.s-err .sdot{background:#f54a45;}.s-info .sdot{background:rgb(20,86,240);}.s-warn .sdot{background:#f5a623;}
-.img-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:8px;margin-top:10px;}
-.img-thumb{aspect-ratio:1;border-radius:6px;overflow:hidden;border:1px solid #dee0e3;position:relative;}
-.img-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
-.img-thumb-name{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.6);color:#fff;font-size:9px;padding:2px 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.bp{background:rgb(20,86,240);color:#fff;}.bp:hover{opacity:.88;}
+.st{display:flex;align-items:flex-start;gap:7px;padding:8px 10px;border-radius:6px;font-size:12px;margin-top:10px;}
+.ok{background:#f0faf0;color:#2ea121;border:1px solid rgba(46,161,33,.2);}
+.er{background:#fff0f0;color:#f54a45;border:1px solid rgba(245,74,69,.2);}
+.if{background:#f0f4ff;color:rgb(20,86,240);border:1px solid rgba(20,86,240,.2);}
+.wn{background:#fffbf0;color:#f5a623;border:1px solid rgba(245,166,35,.2);}
+.dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.ok .dot{background:#2ea121;}.er .dot{background:#f54a45;}.if .dot{background:rgb(20,86,240);}.wn .dot{background:#f5a623;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:8px;margin-top:10px;}
+.th{aspect-ratio:1;border-radius:6px;overflow:hidden;border:1px solid #dee0e3;position:relative;background:#f5f6f7;}
+.th img{width:100%;height:100%;object-fit:cover;display:block;}
+.thn{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.6);color:#fff;font-size:9px;padding:2px 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .hint{text-align:center;color:#bbbfc4;font-size:13px;padding:20px 0 8px;}
-.hint-icon{font-size:28px;margin-bottom:6px;}
+.hint-i{font-size:28px;margin-bottom:6px;}
 .hidden{display:none!important;}
 </style>
 </head>
@@ -44,31 +40,151 @@ select:focus{border-color:rgb(20,86,240);}
 <p class="sub">点击含图片的行 → 自动加载 → 画布编排 → 保存</p>
 
 <div class="card">
-  <div class="card-title">字段配置</div>
+  <div class="ct">字段配置</div>
   <label>来源字段（附件/图片）</label>
-  <select id="sel-src" onchange="window.__plugin.onSrcChange()">
-    <option value="">-- 初始化中 --</option>
-  </select>
+  <select id="sel-src" onchange="onSrcChange()"><option value="">-- 初始化中 --</option></select>
   <label>保存结果到字段（附件）</label>
-  <select id="sel-dst">
-    <option value="">-- 初始化中 --</option>
-  </select>
-  <div id="cfg-status" class="hidden"></div>
+  <select id="sel-dst"><option value="">-- 初始化中 --</option></select>
+  <div id="cfg-st" class="hidden"></div>
 </div>
 
 <div class="card">
-  <div class="card-title">图片预览</div>
-  <div id="hint" class="hint">
-    <div class="hint-icon">👆</div>
-    请点击表格中含图片的行
-  </div>
-  <div id="img-status" class="hidden"></div>
-  <div id="img-grid" class="img-grid"></div>
-  <button id="btn-editor" class="btn btn-primary hidden" onclick="window.__plugin.openEditor()">
-    🎨 打开画布编辑器
-  </button>
+  <div class="ct">图片预览</div>
+  <div id="hint" class="hint"><div class="hint-i">👆</div>请点击表格中含图片的行</div>
+  <div id="img-st" class="hidden"></div>
+  <div id="grid" class="grid"></div>
+  <button id="btn-ed" class="btn bp hidden" onclick="openEditor()">🎨 打开画布编辑器</button>
 </div>
 
-<script type="module" src="./src/index.js"></script>
+<script>
+/*__SDK__*/
+</script>
+<script>
+// SDK 加载完成后，bitable 和 FieldType 挂载在各种可能的位置
+// 这里做兼容处理
+function getSDK() {
+  if (window.bitable) return { bitable: window.bitable, FieldType: window.FieldType || {} };
+  // 扫描所有全局变量找 bitable
+  for (const k of Object.keys(window)) {
+    try {
+      const v = window[k];
+      if (v && typeof v === 'object' && typeof v.bitable === 'object' && v.bitable.base) {
+        return { bitable: v.bitable, FieldType: v.FieldType || {} };
+      }
+    } catch(e) {}
+  }
+  return null;
+}
+
+const S = { bt: null, FT: null, table: null, tableId: null, recordId: null, images: [] };
+
+function el(id) { return document.getElementById(id); }
+function showSt(id, cls, msg) {
+  const e = el(id);
+  e.className = 'st ' + cls;
+  e.innerHTML = '<div class="dot"></div><span>' + msg + '</span>';
+  e.classList.remove('hidden');
+}
+function hideSt(id) { el(id).classList.add('hidden'); }
+
+async function loadFields(table) {
+  try {
+    const fields = await table.getFieldMetaList();
+    const ATT = S.FT.Attachment || 17;
+    const att = fields.filter(f => f.type === ATT);
+    if (!att.length) {
+      showSt('cfg-st', 'wn', '当前表没有附件字段');
+      el('sel-src').innerHTML = '<option value="">-- 无附件字段 --</option>';
+      el('sel-dst').innerHTML = '<option value="">-- 无附件字段 --</option>';
+      return;
+    }
+    hideSt('cfg-st');
+    const opts = att.map(f => '<option value="' + f.id + '">' + f.name + '</option>').join('');
+    el('sel-src').innerHTML = opts;
+    el('sel-dst').innerHTML = opts;
+    el('sel-src').value = att[0].id;
+    el('sel-dst').value = att.length > 1 ? att[1].id : att[0].id;
+  } catch(e) { showSt('cfg-st', 'er', '加载字段失败：' + e.message); }
+}
+
+async function loadImages(recordId) {
+  const srcId = el('sel-src').value;
+  if (!srcId || !S.table) return;
+  el('hint').classList.add('hidden');
+  el('grid').innerHTML = '';
+  el('btn-ed').classList.add('hidden');
+  showSt('img-st', 'if', '加载图片中…');
+  try {
+    const field = await S.table.getField(srcId);
+    const atts = await field.getValue(recordId);
+    if (!atts || !atts.length) { showSt('img-st', 'wn', '该行没有附件，请点击其他行'); return; }
+    const urls = await field.getAttachmentUrls(recordId);
+    S.images = atts.map((a, i) => ({
+      name: a.name, url: urls[i] || '', token: a.token,
+      size: a.size, type: a.type, permission: a.permission || null
+    })).filter(x => x.url && x.type && x.type.startsWith('image/'));
+    if (!S.images.length) { showSt('img-st', 'wn', '附件中没有图片格式的文件'); return; }
+    const grid = el('grid');
+    S.images.forEach(img => {
+      const d = document.createElement('div');
+      d.className = 'th';
+      d.innerHTML = '<img src="' + img.url + '" loading="lazy"><div class="thn">' + img.name + '</div>';
+      grid.appendChild(d);
+    });
+    showSt('img-st', 'ok', '✓ 已加载 ' + S.images.length + ' 张图片');
+    el('btn-ed').classList.remove('hidden');
+  } catch(e) { showSt('img-st', 'er', '加载失败：' + e.message); }
+}
+
+window.onSrcChange = () => { if (S.recordId) loadImages(S.recordId); };
+
+window.openEditor = () => {
+  const dstId = el('sel-dst').value;
+  if (!S.images.length) { alert('请先选择一行有图片的记录'); return; }
+  if (!dstId) { alert('请先选择保存目标字段'); return; }
+  sessionStorage.setItem('collage_images', JSON.stringify(S.images));
+  sessionStorage.setItem('collage_config', JSON.stringify({
+    tableId: S.tableId, recordId: S.recordId, dstFieldId: dstId
+  }));
+  // 把 bitable 挂到 window 上，编辑器窗口通过 window.opener.S_BT 访问
+  window.S_BT = S.bt;
+  window.open('/editor.html', '_blank', 'width=1280,height=820,resizable=yes');
+};
+
+async function init() {
+  // 等 SDK 加载完成（最多 10 秒）
+  let sdk = null;
+  for (let i = 0; i < 100; i++) {
+    sdk = getSDK();
+    if (sdk) break;
+    await new Promise(r => setTimeout(r, 100));
+  }
+  if (!sdk) { showSt('cfg-st', 'er', 'SDK 加载失败，请刷新插件'); return; }
+  S.bt = sdk.bitable; S.FT = sdk.FieldType;
+
+  try {
+    const table = await S.bt.base.getActiveTable();
+    S.table = table; S.tableId = table.id;
+    await loadFields(table);
+
+    S.bt.base.onSelectionChange(async ({ data }) => {
+      if (data.tableId && data.tableId !== S.tableId) {
+        S.tableId = data.tableId;
+        const t = await S.bt.base.getTable(data.tableId);
+        S.table = t; await loadFields(t);
+      }
+      if (data.recordId && data.recordId !== S.recordId) {
+        S.recordId = data.recordId;
+        await loadImages(data.recordId);
+      }
+    });
+
+    const sel = await S.bt.base.getSelection();
+    if (sel.recordId) { S.recordId = sel.recordId; await loadImages(sel.recordId); }
+  } catch(e) { showSt('cfg-st', 'er', '初始化失败：' + e.message); }
+}
+
+init();
+</script>
 </body>
 </html>
