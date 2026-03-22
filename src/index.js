@@ -106,7 +106,7 @@ window.__plugin = {
     sessionStorage.setItem('collage_config', JSON.stringify({
       tableId: S.tableId, recordId: S.recordId, dstFieldId: dstId
     }));
-    window.open('./editor.html', '_blank', 'width=1280,height=820,resizable=yes');
+    window.open('/editor.html', '_blank', 'width=1280,height=820,resizable=yes');
   }
 };
 
