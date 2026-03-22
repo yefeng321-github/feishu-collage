@@ -125,8 +125,9 @@ async function save() {
     const blob = await renderBlob();
     setProg(50, '上传到飞书…');
     const file = new File([blob], 'collage_' + Date.now() + '.png', { type: 'image/png' });
+    // 通过父窗口的 bitable 连接保存
     const bt = window.opener?.__plugin?._bitable;
-    if (!bt) { throw new Error('无法连接飞书，请不要直接打开此页面，需从插件内打开'); }
+    if (!bt) throw new Error('请从飞书插件内打开编辑器，不要直接访问此页面');
     const table = await bt.base.getTable(config.tableId);
     const field = await table.getField(config.dstFieldId);
     await field.setValue(config.recordId, file);
