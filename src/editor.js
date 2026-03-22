@@ -1,4 +1,4 @@
-import { bitable } from '@lark-base-open/js-sdk';
+
 
 let els = [], selId = null, idCtr = 1, cvW = 1200, cvH = 900;
 let drag = null, resize = null, rot = null;
@@ -127,7 +127,9 @@ async function save() {
     const blob = await renderBlob();
     setProg(50, '上传到飞书…');
     const file = new File([blob], 'collage_' + Date.now() + '.png', { type: 'image/png' });
-    const table = await bitable.base.getTable(config.tableId);
+    const bt = window.opener?.__plugin?._bitable;
+    if (!bt) { throw new Error('无法连接飞书，请不要直接打开此页面，需从插件内打开'); }
+    const table = await bt.base.getTable(config.tableId);
     const field = await table.getField(config.dstFieldId);
     await field.setValue(config.recordId, file);
     setProg(100, '保存成功！');
