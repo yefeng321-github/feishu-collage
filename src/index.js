@@ -96,6 +96,7 @@ async function init() {
 }
 
 window.__plugin = {
+  _bitable: bitable,
   onSrcChange() { if (S.recordId) loadImages(S.recordId); },
   openEditor() {
     const dstId = el('sel-dst').value;
