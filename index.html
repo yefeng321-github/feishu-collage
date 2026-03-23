@@ -211,18 +211,18 @@ input[type=range].pri{padding:0;height:18px;cursor:pointer;accent-color:rgb(20,8
 <script>
 // SDK 打包后挂载在 window.__bitable 和 window.__FieldType
 // 兼容多种挂载方式
+// SDK 已通过 build.js 打包内嵌，bitable 挂在 window.__sdk_bitable
+// 同时兼容其他挂载方式
 function getSDK() {
-  if (window.__bitable && window.__bitable.base) return { bt: window.__bitable, ft: window.__FieldType || {} };
-  if (window.LarkSDK) {
-    const s = window.LarkSDK;
-    const bt = s.bitable || (s.default && s.default.bitable);
-    if (bt && bt.base) return { bt, ft: s.FieldType || {} };
-  }
-  // 扫描全局
+  // 方式1: build.js 挂载的
+  const bt1 = window.__sdk_bitable || window.__bitable;
+  if (bt1 && bt1.base) return { bt: bt1, ft: window.__sdk_FieldType || window.__FieldType || {} };
+  // 方式2: 扫描全局
   for (const k of Object.keys(window)) {
     try {
       const v = window[k];
-      if (v && typeof v === 'object' && v.bitable && v.bitable.base) return { bt: v.bitable, ft: v.FieldType || {} };
+      if (v && typeof v === 'object' && typeof v.getActiveTable === 'function') return { bt: v, ft: {} };
+      if (v && v.base && typeof v.base.getActiveTable === 'function') return { bt: v, ft: v.FieldType || {} };
     } catch(e) {}
   }
   return null;
