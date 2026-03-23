@@ -3,20 +3,15 @@ const fs = require('fs');
 async function build() {
   const rollup = require('rollup');
 
-  console.log('Bundling SDK...');
-  
-  // 先看看 SDK 的 index.mjs 导出了什么
   const sdkPkg = JSON.parse(fs.readFileSync('node_modules/@lark-base-open/js-sdk/package.json','utf8'));
   console.log('SDK version:', sdkPkg.version);
-  console.log('SDK main:', sdkPkg.main);
-  console.log('SDK module:', sdkPkg.module);
-  console.log('SDK exports:', JSON.stringify(sdkPkg.exports).slice(0,200));
 
-  const entry = sdkPkg.module || sdkPkg.main || 'node_modules/@lark-base-open/js-sdk/dist/index.mjs';
-  console.log('Using entry:', entry);
+  // 直接用已知的入口文件
+  const entry = 'node_modules/@lark-base-open/js-sdk/dist/index.mjs';
+  console.log('Entry:', entry, 'exists:', fs.existsSync(entry));
 
   const bundle = await rollup.rollup({
-    input: 'node_modules/@lark-base-open/js-sdk/' + entry.replace('./',''),
+    input: entry,
     onwarn: () => {},
   });
 
@@ -26,24 +21,22 @@ async function build() {
   });
 
   const rawCode = output[0].code;
-  console.log('Raw SDK size:', Math.round(rawCode.length/1024)+'KB');
-  
-  // 打印 LarkSDK 的 keys，确认 bitable 在哪
+  console.log('SDK size:', Math.round(rawCode.length/1024) + 'KB');
+
   const sdkCode = rawCode + '\n' +
     'try{' +
-    'console.log("[SDK] LarkSDK keys:", Object.keys(LarkSDK).join(","));' +
-    'window.__bitable = LarkSDK.bitable || LarkSDK.default && LarkSDK.default.bitable;' +
-    'window.__FieldType = LarkSDK.FieldType || {};' +
-    'console.log("[SDK] bitable:", typeof window.__bitable);' +
-    '}catch(e){console.error("[SDK] mount error:",e.message);}';
-
-  console.log('Final SDK size:', Math.round(sdkCode.length/1024)+'KB');
+    'var _k=Object.keys(LarkSDK);' +
+    'console.log("[SDK] keys:", _k.join(","));' +
+    'window.__bitable=LarkSDK.bitable;' +
+    'window.__FieldType=LarkSDK.FieldType||{};' +
+    'console.log("[SDK] bitable type:", typeof window.__bitable);' +
+    '}catch(e){console.error("[SDK] error:",e.message);}';
 
   if (!fs.existsSync('dist')) fs.mkdirSync('dist');
   const html = fs.readFileSync('index.html','utf8');
   const out = html.replace('/*__SDK__*/', sdkCode);
   fs.writeFileSync('dist/index.html', out);
-  console.log('Built dist/index.html', Math.round(out.length/1024)+'KB');
+  console.log('Built dist/index.html', Math.round(out.length/1024) + 'KB');
   console.log('Done!');
 }
 
