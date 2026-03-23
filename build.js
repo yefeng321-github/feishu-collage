@@ -2,7 +2,7 @@ const fs = require('fs');
 
 async function build() {
   const rollup = require('rollup');
- 
+
   const sdkPkg = JSON.parse(fs.readFileSync('node_modules/@lark-base-open/js-sdk/package.json','utf8'));
   console.log('SDK version:', sdkPkg.version);
 
