@@ -242,21 +242,8 @@ async function loadImages(recordId) {
 
 window.onSrcChange = () => { if(S.recordId) loadImages(S.recordId); };
 
-// 根据图片数量计算最佳网格
-function bestGrid(n) {
-  if (n <= 1) return [1,1];
-  if (n === 2) return [2,1];
-  if (n === 3) return [3,1];
-  if (n === 4) return [2,2];
-  if (n === 5) return [3,2];
-  if (n === 6) return [3,2];
-  if (n === 7) return [4,2];
-  if (n === 8) return [4,2];
-  if (n === 9) return [3,3];
-  if (n <= 12) return [4,3];
-  if (n <= 16) return [4,4];
-  return [Math.ceil(Math.sqrt(n)), Math.ceil(n/Math.ceil(Math.sqrt(n)))];
-}
+// 网格列数：固定2列（超过1张都用2列网格）
+function gridCols(n) { return n <= 1 ? 1 : 2; }
 
 window.autoCollage = async () => {
   const dstId = g('sel-dst').value;
@@ -265,16 +252,19 @@ window.autoCollage = async () => {
 
   showProg('自动拼接中…', 10, '计算布局…');
 
-  // 计算网格
-  const [cols, rows] = bestGrid(S.images.length);
-  const cvW = 1200, cvH = Math.round(1200 / cols * rows);
+  const n = S.images.length;
+  const cols = gridCols(n);
+  // 行数：不足一排也按完整行算（1张=1行1列，2张=1行2列，3-4张=2行2列，5-6张=3行2列）
+  const rows = cols === 1 ? 1 : Math.ceil(n / cols);
+
+  // 画布固定 1:1，1200×1200
+  const cvW = 1200, cvH = 1200;
   const pad = 8;
-  const w = Math.floor((cvW - pad*(cols+1)) / cols);
-  const h = Math.floor((cvH - pad*(rows+1)) / rows);
+  const cellW = Math.floor((cvW - pad*(cols+1)) / cols);
+  const cellH = Math.floor((cvH - pad*(rows+1)) / rows);
 
   setProg(20, '加载图片…');
 
-  // 渲染到 canvas
   const off = document.createElement('canvas');
   off.width = cvW; off.height = cvH;
   const ctx = off.getContext('2d');
@@ -282,18 +272,23 @@ window.autoCollage = async () => {
   ctx.fillRect(0, 0, cvW, cvH);
 
   await Promise.all(S.images.map((img, i) => new Promise(res => {
-    const col = i % cols, row = Math.floor(i / cols);
-    const x = pad + col*(w+pad), y = pad + row*(h+pad);
+    const col = i % cols;
+    const row = Math.floor(i / cols);
+    const cx = pad + col*(cellW+pad);
+    const cy = pad + row*(cellH+pad);
+
     const el = new Image();
     el.crossOrigin = 'anonymous';
     el.onload = () => {
-      // 按比例裁剪居中
+      // 保持原始比例，居中显示，空余处保持白色背景
       const ir = el.naturalWidth / el.naturalHeight;
-      const tr = w / h;
-      let sx=0,sy=0,sw=el.naturalWidth,sh=el.naturalHeight;
-      if (ir > tr) { sw = el.naturalHeight*tr; sx = (el.naturalWidth-sw)/2; }
-      else { sh = el.naturalWidth/tr; sy = (el.naturalHeight-sh)/2; }
-      ctx.drawImage(el, sx, sy, sw, sh, x, y, w, h);
+      const tr = cellW / cellH;
+      let dw, dh;
+      if (ir > tr) { dw = cellW; dh = cellW / ir; }
+      else { dh = cellH; dw = cellH * ir; }
+      const dx = cx + (cellW - dw) / 2;
+      const dy = cy + (cellH - dh) / 2;
+      ctx.drawImage(el, 0, 0, el.naturalWidth, el.naturalHeight, dx, dy, dw, dh);
       res();
     };
     el.onerror = () => res();
