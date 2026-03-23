@@ -234,9 +234,11 @@ async function loadImages(recordId) {
       d.innerHTML=`<img src="${img.url}" loading="lazy"><div class="thn">${img.name}</div>`;
       g('imggrid').appendChild(d);
     });
-    showSt('img-st','ok',`✓ 已加载 ${S.images.length} 张图片`);
+    showSt('img-st','ok',`✓ 已加载 ${S.images.length} 张图片，拼接中…`);
     g('btn-ed').classList.remove('hidden');
     g('btn-auto').classList.remove('hidden');
+    // 自动触发拼接保存
+    autoCollage();
   } catch(e) { showSt('img-st','er','加载失败：'+e.message); }
 }
 
