@@ -33,6 +33,7 @@ select:focus{border-color:rgb(20,86,240);}
 .hint{text-align:center;color:#bbbfc4;font-size:13px;padding:20px 0 8px;}
 .hint-i{font-size:28px;margin-bottom:6px;}
 .hidden{display:none!important;}
+.ba{background:#2ea121;color:#fff;}.ba:hover{opacity:.88;}
 #editor{display:none;position:fixed;inset:0;z-index:9999;flex-direction:column;background:#f0f1f3;}
 #editor.open{display:flex;}
 #etb{display:flex;flex-wrap:wrap;align-items:center;gap:4px;padding:6px 10px;flex-shrink:0;background:#fff;border-bottom:1px solid #dee0e3;}
@@ -98,7 +99,8 @@ input[type=range].pri{padding:0;height:18px;cursor:pointer;accent-color:rgb(20,8
     <div id="hint" class="hint"><div class="hint-i">👆</div>请点击表格中含图片的行</div>
     <div id="img-st" class="hidden"></div>
     <div id="imggrid" class="imggrid"></div>
-    <button id="btn-ed" class="btn bp hidden" onclick="openEditor()">🎨 打开画布编辑器</button>
+    <button id="btn-auto" class="btn ba hidden" onclick="autoCollage()">⚡ 一键自动拼接并保存</button>
+    <button id="btn-ed" class="btn bp hidden" onclick="openEditor()">🎨 手动编辑画布</button>
   </div>
 </div>
 
@@ -217,7 +219,7 @@ async function loadFields(table) {
 async function loadImages(recordId) {
   const srcId = g('sel-src').value;
   if (!srcId || !S.table) return;
-  g('hint').classList.add('hidden'); g('imggrid').innerHTML=''; g('btn-ed').classList.add('hidden');
+  g('hint').classList.add('hidden'); g('imggrid').innerHTML=''; g('btn-ed').classList.add('hidden'); g('btn-auto').classList.add('hidden');
   showSt('img-st','if','加载图片中…');
   try {
     const field = await S.table.getField(srcId);
@@ -234,10 +236,85 @@ async function loadImages(recordId) {
     });
     showSt('img-st','ok',`✓ 已加载 ${S.images.length} 张图片`);
     g('btn-ed').classList.remove('hidden');
+    g('btn-auto').classList.remove('hidden');
   } catch(e) { showSt('img-st','er','加载失败：'+e.message); }
 }
 
 window.onSrcChange = () => { if(S.recordId) loadImages(S.recordId); };
+
+// 根据图片数量计算最佳网格
+function bestGrid(n) {
+  if (n <= 1) return [1,1];
+  if (n === 2) return [2,1];
+  if (n === 3) return [3,1];
+  if (n === 4) return [2,2];
+  if (n === 5) return [3,2];
+  if (n === 6) return [3,2];
+  if (n === 7) return [4,2];
+  if (n === 8) return [4,2];
+  if (n === 9) return [3,3];
+  if (n <= 12) return [4,3];
+  if (n <= 16) return [4,4];
+  return [Math.ceil(Math.sqrt(n)), Math.ceil(n/Math.ceil(Math.sqrt(n)))];
+}
+
+window.autoCollage = async () => {
+  const dstId = g('sel-dst').value;
+  if (!S.images.length) { alert('请先选择一行有图片的记录'); return; }
+  if (!dstId) { alert('请先选择保存目标字段'); return; }
+
+  showProg('自动拼接中…', 10, '计算布局…');
+
+  // 计算网格
+  const [cols, rows] = bestGrid(S.images.length);
+  const cvW = 1200, cvH = Math.round(1200 / cols * rows);
+  const pad = 8;
+  const w = Math.floor((cvW - pad*(cols+1)) / cols);
+  const h = Math.floor((cvH - pad*(rows+1)) / rows);
+
+  setProg(20, '加载图片…');
+
+  // 渲染到 canvas
+  const off = document.createElement('canvas');
+  off.width = cvW; off.height = cvH;
+  const ctx = off.getContext('2d');
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, cvW, cvH);
+
+  await Promise.all(S.images.map((img, i) => new Promise(res => {
+    const col = i % cols, row = Math.floor(i / cols);
+    const x = pad + col*(w+pad), y = pad + row*(h+pad);
+    const el = new Image();
+    el.crossOrigin = 'anonymous';
+    el.onload = () => {
+      // 按比例裁剪居中
+      const ir = el.naturalWidth / el.naturalHeight;
+      const tr = w / h;
+      let sx=0,sy=0,sw=el.naturalWidth,sh=el.naturalHeight;
+      if (ir > tr) { sw = el.naturalHeight*tr; sx = (el.naturalWidth-sw)/2; }
+      else { sh = el.naturalWidth/tr; sy = (el.naturalHeight-sh)/2; }
+      ctx.drawImage(el, sx, sy, sw, sh, x, y, w, h);
+      res();
+    };
+    el.onerror = () => res();
+    el.src = img.url;
+  })));
+
+  setProg(70, '保存到飞书…');
+
+  try {
+    const blob = await new Promise((res,rej) => off.toBlob(b=>b?res(b):rej(new Error('toBlob失败')),'image/png'));
+    const file = new File([blob], 'collage_'+Date.now()+'.png', {type:'image/png'});
+    const table = await bitable.base.getTable(S.tableId);
+    const field = await table.getField(dstId);
+    await field.setValue(S.recordId, file);
+    setProg(100, '保存成功！');
+    setTimeout(()=>{ hideProg(); showSt('img-st','ok','✓ 已自动拼接保存！'); }, 800);
+  } catch(e) {
+    hideProg();
+    alert('保存失败：'+e.message);
+  }
+};
 window.openEditor = () => {
   const dstId = g('sel-dst').value;
   if (!S.images.length) { alert('请先选择一行有图片的记录'); return; }
