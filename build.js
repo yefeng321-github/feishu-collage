@@ -35,15 +35,19 @@ async function build() {
 
   console.log('Exports found:', exports.join(', '));
 
+  // 挂载所有导出到 window.__sdk_xxx
   const mountCode = exports.map(name =>
-    `if(typeof ${name}!=="undefined")window.__sdk_${name}=${name};`
-  ).join('');
+    `try{if(typeof ${name}!=="undefined")window.__sdk_${name}=${name};}catch(e){}`
+  ).join('\n');
 
-  const sdkCode = '(function(){\n"use strict";\n' + code + '\n' + mountCode +
-    '\nwindow.__bitable=window.__sdk_bitable;' +
+  // 特别确保 bitable 正确挂载
+  const finalMount =
+    'window.__bitable=window.__sdk_bitable;' +
     'window.__FieldType=window.__sdk_FieldType||{};' +
-    'console.log("[SDK] bitable:", typeof window.__bitable);' +
-    '})();';
+    'console.log("[SDK] bitable type:", typeof window.__bitable);' +
+    'if(window.__bitable)console.log("[SDK] bitable.base type:", typeof window.__bitable.base);';
+
+  const sdkCode = '(function(){\n"use strict";\n' + code + '\n' + mountCode + '\n' + finalMount + '\n})();';
 
   console.log('SDK size:', Math.round(sdkCode.length/1024) + 'KB');
 
